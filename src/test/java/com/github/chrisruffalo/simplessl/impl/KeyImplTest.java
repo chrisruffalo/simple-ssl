@@ -74,7 +74,6 @@ public class KeyImplTest {
 
         // assert der is the same as the file converted by openssl
         Assert.assertTrue(FileUtils.contentEquals(derPath.toFile(), tempDerPath.toFile()));
-
     }
 
 }
