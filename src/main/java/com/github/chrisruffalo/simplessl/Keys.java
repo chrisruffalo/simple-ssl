@@ -1,40 +1,19 @@
 package com.github.chrisruffalo.simplessl;
 
-import com.github.chrisruffalo.simplessl.impl.asn1.ASN1DSAKeyParser;
-import com.github.chrisruffalo.simplessl.impl.asn1.ASN1KeyParser;
-import com.github.chrisruffalo.simplessl.impl.asn1.ASN1RSAKeyParser;
-import com.github.chrisruffalo.simplessl.impl.PrivateKeyImpl;
-import com.github.chrisruffalo.simplessl.impl.PublicKeyImpl;
 import com.github.chrisruffalo.simplessl.impl.io.DERKeyReader;
 import com.github.chrisruffalo.simplessl.impl.io.KeyReader;
 import com.github.chrisruffalo.simplessl.impl.io.PEMKeyReader;
 import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.ASN1StreamParser;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.PEMParser;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
-import javax.swing.text.html.Option;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,7 +28,9 @@ public final class Keys {
 
     // initialize reader chain
     static {
+        // try pem first
         Keys.READER_CHAIN.add(new PEMKeyReader());
+        // them try der
         Keys.READER_CHAIN.add(new DERKeyReader());
     }
 
