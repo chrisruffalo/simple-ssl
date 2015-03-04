@@ -1,11 +1,15 @@
 package com.github.chrisruffalo.simplessl.impl.keys;
 
 import com.github.chrisruffalo.simplessl.api.keys.PrivateKey;
+import com.github.chrisruffalo.simplessl.api.keys.PublicKey;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey;
+import com.github.chrisruffalo.simplessl.exception.InsufficientInformationException;
+import com.google.common.base.Optional;
 
 /**
  * Created by cruffalo on 2/25/15.
  */
-public class PrivateKeyImpl extends KeyImpl implements PrivateKey {
+public class PrivateKeyImpl<K extends PublicKey> extends KeyImpl implements PrivateKey<K> {
 
     private final java.security.PrivateKey wrapped;
 
@@ -26,4 +30,9 @@ public class PrivateKeyImpl extends KeyImpl implements PrivateKey {
     @Override
     public boolean isPublic() { return false; }
 
+    @Override
+    public Optional<K> publicKey() {
+        // not enough information
+        return Optional.absent();
+    }
 }

@@ -1,19 +1,56 @@
 package com.github.chrisruffalo.simplessl.impl.keys.rsa;
 
+import com.github.chrisruffalo.simplessl.api.SupportedKeyType;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey;
+import com.github.chrisruffalo.simplessl.engine.Provider;
 import com.github.chrisruffalo.simplessl.impl.keys.PrivateKeyImpl;
+import com.google.common.base.Optional;
 
 import java.math.BigInteger;
 import java.security.Key;
+import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
 
 /**
  * Created by cruffalo on 3/3/15.
  */
-public class RSAPrivateKeyImpl extends PrivateKeyImpl implements RSAPrivateKey {
+public class RSAPrivateKeyImpl extends PrivateKeyImpl<RSAPublicKey> implements RSAPrivateKey {
 
     public RSAPrivateKeyImpl(java.security.interfaces.RSAPrivateKey key) {
         super(key);
+    }
+
+    @Override
+    public Optional<RSAPublicKey> publicKey() {
+        final Key key = this.unwrap();
+        if(key instanceof RSAPrivateCrtKey) {
+            // get spec
+            final RSAPrivateCrtKey crtKey = (RSAPrivateCrtKey) key;
+            final RSAPublicKeySpec spec = new RSAPublicKeySpec(crtKey.getModulus(), crtKey.getPublicExponent());
+
+            // derive public key from spec
+            final KeyFactory factory = Provider.getKeyFactory(SupportedKeyType.RSA);
+            try {
+                // create key from factory
+                final java.security.PublicKey publicKey = factory.generatePublic(spec);
+
+                // if it is found, return it
+                if(publicKey instanceof java.security.interfaces.RSAPublicKey) {
+                    final java.security.interfaces.RSAPublicKey rsaPublicKey = (java.security.interfaces.RSAPublicKey)publicKey;
+                    final RSAPublicKey impl = new RSAPublicKeyImpl(rsaPublicKey);
+                    return Optional.of(impl);
+                }
+            } catch (InvalidKeySpecException e) {
+                //throw new RuntimeException("An invalid public key specification was provided for reconstruction the public key", e);
+                return Optional.absent();
+            }
+        }
+        //throw new InsufficientInformationException("The underlying private key type did not have sufficient information to reconstruct the public key");
+        return Optional.absent();
     }
 
     @Override
@@ -34,4 +71,57 @@ public class RSAPrivateKeyImpl extends PrivateKeyImpl implements RSAPrivateKey {
         return null;
     }
 
+    @Override
+    public BigInteger getPublicExponent() {
+        final PrivateKey key = this.unwrap();
+        if(key instanceof java.security.interfaces.RSAPrivateCrtKey) {
+            return ((RSAPrivateCrtKey) key).getPublicExponent();
+        }
+        return null;
+    }
+
+    @Override
+    public BigInteger getPrimeP() {
+        final PrivateKey key = this.unwrap();
+        if(key instanceof java.security.interfaces.RSAPrivateCrtKey) {
+            return ((RSAPrivateCrtKey) key).getPrimeP();
+        }
+        return null;
+    }
+
+    @Override
+    public BigInteger getPrimeQ() {
+        final PrivateKey key = this.unwrap();
+        if(key instanceof java.security.interfaces.RSAPrivateCrtKey) {
+            return ((RSAPrivateCrtKey) key).getPrimeQ();
+        }
+        return null;
+    }
+
+    @Override
+    public BigInteger getPrimeExponentP() {
+        final PrivateKey key = this.unwrap();
+        if(key instanceof java.security.interfaces.RSAPrivateCrtKey) {
+            return ((RSAPrivateCrtKey) key).getPrimeExponentP();
+        }
+        return null;
+    }
+
+    @Override
+    public BigInteger getPrimeExponentQ() {
+        final PrivateKey key = this.unwrap();
+        if(key instanceof java.security.interfaces.RSAPrivateCrtKey) {
+            return ((RSAPrivateCrtKey) key).getPrimeExponentQ();
+        }
+        return null;
+    }
+
+    @Override
+    public BigInteger getCrtCoefficient() {
+        final PrivateKey key = this.unwrap();
+        if(key instanceof java.security.interfaces.RSAPrivateCrtKey) {
+            return ((RSAPrivateCrtKey) key).getCrtCoefficient();
+        }
+        return null;
+    }
 }

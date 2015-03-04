@@ -36,7 +36,7 @@ public class CertificateBuilderImplTest {
         final Path publicKeyPath = Paths.get(publicKeyURL.toURI());
 
         // read keys
-        Optional<PrivateKey> privateKey = Keys.read(privateKeyPath);
+        Optional<PrivateKey<PublicKey>> privateKey = Keys.read(privateKeyPath);
         Optional<PublicKey> publicKey = Keys.read(publicKeyPath);
 
         // create certificate builder
@@ -52,7 +52,7 @@ public class CertificateBuilderImplTest {
     @Test
     public void testDefaultV1FromGenerated() {
         // generate keys
-        KeyPair pair = RSAKeyPairImpl.generate();
+        KeyPair pair = Keys.generateRSA();
 
         // create certificate builder
         final CertificateBuilder builder = Certificates.builder();

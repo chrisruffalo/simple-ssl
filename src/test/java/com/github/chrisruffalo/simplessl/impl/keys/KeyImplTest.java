@@ -59,8 +59,8 @@ public class KeyImplTest {
         final Key key = keyOption.get();
 
         // write keys
-        Keys.writePem(key, tempPemPath);
-        Keys.writeDer(key, tempDerPath);
+        Keys.writePEM(key, tempPemPath);
+        Keys.writeDER(key, tempDerPath);
 
         // now we want to verify that the der key is the same as the der key found in read-test/rsa/der/private_key.der
         // and that the output pem key is the same as the one read in for this test
@@ -75,5 +75,4 @@ public class KeyImplTest {
         // assert der is the same as the file converted by openssl
         Assert.assertTrue(FileUtils.contentEquals(derPath.toFile(), tempDerPath.toFile()));
     }
-
 }

@@ -30,6 +30,18 @@ public final class RSAKeyPairImpl extends KeyPairImpl implements RSAKeyPair {
         super(new RSAPublicKeyImpl(rsaPublicKey), new RSAPrivateKeyImpl(rsaPrivateKey));
     }
 
+    @Override
+    public com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey privateKey() {
+        return (com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey) super.privateKey();
+    }
+
+    @Override
+    public com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey publicKey() {
+        return (com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey) super.publicKey();
+    }
+
+    // generators ======================
+
     public static RSAKeyPair generate() {
         return RSAKeyPairImpl.generate(RSAKeyPairImpl.DEFAULT_BITSIZE, RSAKeyPairImpl.DEFAULT_EXPONENT);
     }

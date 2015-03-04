@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
-import javax.swing.text.html.Option;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,7 +50,7 @@ public final class Keys {
      *
      * @return generated key pair
      */
-    public KeyPair generateRSA() {
+    public static RSAKeyPair generateRSA() {
         return RSAKeyPairImpl.generate();
     }
 
@@ -62,7 +61,7 @@ public final class Keys {
      * @param bits size of the key in bits, should be at least 2048
      * @return generated key pair
      */
-    public KeyPair generateRSA(int bits) {
+    public static RSAKeyPair generateRSA(int bits) {
         return RSAKeyPairImpl.generate(bits);
     }
 
@@ -75,7 +74,7 @@ public final class Keys {
      * @param exponent the key's exponent
      * @return
      */
-    public KeyPair generateRSA(int bits, BigInteger exponent) {
+    public static RSAKeyPair generateRSA(int bits, BigInteger exponent) {
         return RSAKeyPairImpl.generate(bits, exponent);
     }
 
@@ -176,35 +175,35 @@ public final class Keys {
         return Keys.read(bytes);
     }
 
-    public static void writePem(Key key, Path path) {
-        Keys.writePem(key, null, path);
+    public static void writePEM(Key key, Path path) {
+        Keys.writePEM(key, null, path);
     }
 
-    public static void writePem(Key key, OutputStream stream) {
-        Keys.writePem(key, null, stream);
+    public static void writePEM(Key key, OutputStream stream) {
+        Keys.writePEM(key, null, stream);
     }
 
-    public static void writePem(Key key, Cipher cipher, Path path) {
+    public static void writePEM(Key key, Cipher cipher, Path path) {
         Keys.write(key.pem(), cipher, path);
     }
 
-    public static void writePem(Key key, Cipher cipher, OutputStream stream) {
+    public static void writePEM(Key key, Cipher cipher, OutputStream stream) {
         Keys.write(key.pem(), cipher, stream);
     }
 
-    public static void writeDer(Key key, Path path) {
-        Keys.writeDer(key, null, path);
+    public static void writeDER(Key key, Path path) {
+        Keys.writeDER(key, null, path);
     }
 
-    public static void writeDer(Key key, OutputStream stream) {
-        Keys.writeDer(key, null, stream);
+    public static void writeDER(Key key, OutputStream stream) {
+        Keys.writeDER(key, null, stream);
     }
 
-    public static void writeDer(Key key, Cipher cipher, Path path) {
+    public static void writeDER(Key key, Cipher cipher, Path path) {
         Keys.write(key.der(), cipher, path);
     }
 
-    public static void writeDer(Key key, Cipher cipher, OutputStream stream) {
+    public static void writeDER(Key key, Cipher cipher, OutputStream stream) {
         Keys.write(key.der(), cipher, stream);
     }
 
