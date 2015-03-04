@@ -10,6 +10,12 @@ Java API for dealing with most cryptographic tasks is... complex.
 SimpleSSL aims to change that by creating a clean, fluent, and descriptive API. If you want to get started keep reading. If you aren't 
 persuaded then just [skip ahead to the section for skeptics](#skeptical).
 
+### Wait, what?
+
+This whole thing started when I realized that it was *easier* to use Java to call into the JRuby to use the OpenSSL bindings that had
+been written for JRuby (jruby-openssl).  I replaced 480 lines of Java on a project with around 300 lines of combined Java/Ruby code.  That
+*included* the code required for bridging between Java and JRuby.  (The actual Ruby code was only 119 lines.)
+
 If you think that **any of this** means that I hate the guys over at [Bouncy Castle](https://www.bouncycastle.org/) well, [you're wrong!](#lovethecastle)
 
 <br/>
@@ -25,8 +31,19 @@ some of the basics here.
 
 * Support for RSA key types
     * PEM and DER encoding
+        * PCKS#1
+    * PEM encoded PCKS#8
 * Support for x509 Certificates (v1 and v3)
     * SHA1 and SHA2 signature types
+    
+## Upcoming Features
+
+* Support for reading and writing x509 certificates
+* Support for creating and applying CSRs
+* Support for PCKS#12
+* Support for encryption when reading/writing
+* Support for creating an SSL Context from RSA keys
+* Support for validating Certificates and Certificate chains
 
 ## Prerequisites and Dependencies
 
@@ -205,7 +222,8 @@ r = RSA_new();
 ret = RSA_generate_key_ex(r, 2048, 65537, NULL);
 ```
 
-Ok, so that just uses a slightly different API than C.
+Ok, so that just uses a slightly different API than the C example.  (The method the C version calls is deprecated and should just be used
+pretty much the same way that this example is.)
 
 ### **C\#**
 
@@ -223,7 +241,7 @@ $config = array('private_key_bits' => 512);
 $privKey = openssl_pkey_new($config);
 ```
 
-I'll not pretend to know exactly what this is doing but that's one of the longer examples so far. It is using more parameters though.
+Even PHP gets it simple.
 
 ### **Java**
 
