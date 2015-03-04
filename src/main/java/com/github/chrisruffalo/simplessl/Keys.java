@@ -140,10 +140,11 @@ public final class Keys {
             return Optional.absent();
         }
 
-        try(final InputStream stream = new ByteArrayInputStream(input)) {
-            return Keys.read(new ByteArrayInputStream(input));
-        } catch (IOException e) {
-            Keys.LOGGER.error("IO exception while reading bytes, error: {}", e.getMessage());
+        for(KeyReader reader : Keys.READER_CHAIN) {
+            final Optional<K> keyFound = reader.read(input);
+            if(keyFound.isPresent()) {
+                return keyFound;
+            }
         }
 
         return Optional.absent();
@@ -163,14 +164,16 @@ public final class Keys {
             return Optional.absent();
         }
 
-        for(KeyReader reader : Keys.READER_CHAIN) {
-            final Optional<K> keyFound = reader.read(inputStream);
-            if(keyFound.isPresent()) {
-                return keyFound;
-            }
+        // read input stream to bytes
+        final byte[] bytes;
+        try {
+            bytes = ByteStreams.toByteArray(inputStream);
+        } catch (IOException e) {
+            Keys.LOGGER.error("Could not read stream");
+            return Optional.absent();
         }
 
-        return Optional.absent();
+        return Keys.read(bytes);
     }
 
     public static void writePem(Key key, Path path) {

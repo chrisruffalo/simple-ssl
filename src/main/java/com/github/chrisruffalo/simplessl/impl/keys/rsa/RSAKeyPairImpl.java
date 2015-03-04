@@ -46,7 +46,7 @@ public final class RSAKeyPairImpl extends KeyPairImpl implements RSAKeyPair {
     public static RSAKeyPair generate(int bits, BigInteger exponent) {
 
         // get generator
-        final KeyPairGenerator generator = Provider.getRSAKeyPairGenerator(SupportedKeyPairType.RSA, bits, exponent);
+        final KeyPairGenerator generator = Provider.getRSAKeyPairGenerator(bits, exponent);
 
         // generate wrapped key
         final java.security.KeyPair pair = generator.generateKeyPair();
