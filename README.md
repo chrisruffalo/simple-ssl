@@ -57,26 +57,83 @@ For maven you just need the dependency ```com.github.chrisruffalo:simplessl:1.0-
     <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
-## Using SimpleSSL
-
-This library is designed to have a *straightforward*, *simple*, and *fluent* API.  The primary consideration is *ease of use* and **never**
-performance or features.  The (API)[#api] has several main entry points that are outlined in the next section.  These are [Keys](#keys) and [Certificates](#certificates).
-
-
 <br/>
 
 ---
 
-# API <a name="api"></a>
+# Using SimpleSSL
+
+This library is designed to have a *straightforward*, *simple*, and *fluent* API.  The primary consideration is *ease of use* and **never**
+performance or features.  The (API)[#api] has several main entry points that are outlined in the next section.  These are [Keys](#keys) and [Certificates](#certificates).
+
+## Quick Facts
+
+Most of the objects in the API that have a direct analog in the JCE are type-compatible where possible.  These objects can be unwrapped through the ```unwrap()``` method
+to convert to a JCE object if required.  Objects, like ```KeyPair```, that cannot extend interfaces and types from the JCE API also support ```unwrap()``` so that
+they can be used with JCE types.
+
+The SimpleSSL API also makes use of ```Optional<>``` and ```Either<>``` to support safe programming.  This allows the user to inspect many of the returned values without worrying
+about NullPointer exceptions.  SimpleSSL makes it a policy to avoid returning nulls or throwing checked **or** unchecked exceptions where possible.
+
+If something goes wrong SimpleSSL will return an empty Optional<> or an Either<> populated (right side) with errors.  Warnings and suggestions will be logged using SLF4J so that
+the consumers of SLF4J can have an opportunity to see and fix their mistakes during testing.
+
+The Optional<> implementation comes from Guava for supporting the 1.7 JDK and the Either<> implementation is part of the SimpleSSL API.
+
+## Quick Examples <a name="examples"></a>
+
+### **Generate a RSA Key**
+
+``` java
+KeyPair pair = Keys.generateRSA(2048);
+```
+
+One line that *matches* the way that the OpenSSL, Ruby, C, C++, C\#, Python, and Perl APIs work.  Seriously.
+
+### **Read a RSA Key (PEM or DER PKCS\#1)**
+
+``` java
+Path privateKeyPath = Paths.get("/keys/private_key.pem");
+Optional<RSAPrivateKey> privateRSAKeyOption = Keys.read(privateKeyPath);
+```
+
+Read, in just about any common format, a private key file.  If something goes wrong the key will be absent from the Option.
+
+### **Write a Key to DER or PEM**
+
+``` java
+Path outputPemPath = Paths.get("/keys/private_key.pem");
+Keys.writePEM(privateKey, outputPemPath);
+
+Path outputDerPath = Paths.get("/keys/private_key.der");
+Keys.writePEM(privateKey, outputDerPath);
+```
+
+That's it!  It uses Java new file API to handle the paths and it provides a simple interface for writing keys.
+
+### **Read public key from private key (where supported)**
+
+``` java
+Path privateKeyPath = Paths.get("/keys/private_key.pem");
+Optional<RSAPrivateKey> privateKeyOption = Keys.read(privateKeyPath);
+
+RSAPrivateKey privateKey = privateKeyOption.get();
+Optional<RSAPublicKey> publicKey = privateKey.publicKey();
+```
+
+This depends on the ability to derive/reconstruct the private key from what was given and may not be available with all types so it comes with an Optional<> so that
+you can determine if the key was found without having to sort through a bunch of nasty exceptions.
+
+## API Overview <a name="api"></a>
 
 * [Keys](#keys)
 * [Certificates](#certificates)
 
-## Keys <a name="keys"></a>
+### Keys <a name="keys"></a>
 
-The entry point for Keys is ```com.github.chrisruffalo.simplessl.Keys```.
+The entry point for Keys is ```com.github.chrisruffalo.simplessl.Keys```.  This is used to read Keys, generate Keys, and otherwise 
 
-## Certificates <a name="certificates"></a>
+### Certificates <a name="certificates"></a>
 
 The entry point for Certificates is ```com.github.chrisruffalo.simplessl.Certificates```.
 
@@ -290,50 +347,8 @@ But most of us don't need that.  What most of us want is to be able to deal with
 *None* of those Java examples deal with encrypted keys, serious error handling, file permissions, and a ton of other gotchas.  Most of the examples spend a lot of time going 
 between JCE and the Bouncy Castle APIs.
 
-How does SimpleSSL fix this?  By presenting a single API that is oriented around the types of SSL objects you will deal with.  Look at these examples from the tasks outlined
-earlier:
-
-### **Generate a RSA Key**
-
-``` java
-KeyPair pair = Keys.generateRSA(2048);
-```
-
-One line that *matches* the way that the OpenSSL, Ruby, C, C++, C\#, Python, and Perl APIs work.  Seriously.
-
-### **Read a RSA Key (PEM or DER PKCS\#1)**
-
-``` java
-Path privateKeyPath = Paths.get("/keys/private_key.pem");
-Optional<RSAPrivateKey> privateRSAKeyOption = Keys.read(privateKeyPath);
-```
-
-Read, in just about any common format, a private key file.  If something goes wrong the key will be absent from the Option.
-
-### **Write a Key to DER or PEM**
-
-``` java
-Path outputPemPath = Paths.get("/keys/private_key.pem");
-Keys.writePEM(privateKey, outputPemPath);
-
-Path outputDerPath = Paths.get("/keys/private_key.der");
-Keys.writePEM(privateKey, outputDerPath);
-```
-
-That's it!  It uses Java new file API to handle the paths and it provides a simple interface for writing keys.
-
-### **Read public key from private key (where supported)**
-
-``` java
-Path privateKeyPath = Paths.get("/keys/private_key.pem");
-Optional<RSAPrivateKey> privateKeyOption = Keys.read(privateKeyPath);
-
-RSAPrivateKey privateKey = privateKeyOption.get();
-Optional<RSAPublicKey> publicKey = privateKey.publicKey();
-```
-
-This depends on the ability to derive/reconstruct the private key from what was given and may not be available with all types so it comes with an Optional<> so that 
-you can determine if the key was found without having to sort through a bunch of nasty exceptions.
+How does SimpleSSL fix this?  By presenting a single API that is oriented around the types of SSL objects you will deal with.  Go back and [look at some of the examples](#examples) 
+and how SimpleSSL deals with the tasks that can be painful without the simplified API.
 
 ## What about Bouncy Castle? <a name="lovethecastle"></a>
 
