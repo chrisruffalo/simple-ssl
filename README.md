@@ -14,7 +14,8 @@ persuaded then just [skip ahead to the section for skeptics](#skeptical).
 
 This whole thing started when I realized that it was *easier* to use Java to call into the JRuby to use the OpenSSL bindings that had
 been written for JRuby (jruby-openssl).  I replaced 480 lines of Java on a project with around 300 lines of combined Java/Ruby code.  That
-*included* the code required for bridging between Java and JRuby.  (The actual Ruby code was only 119 lines.)
+*included* the code required for bridging between Java and JRuby.  (The actual Ruby code was only 119 lines.  The first real version of
+this README file, at 380 lines, was shorter than the original Java code that started this mess!)
 
 If you think that **any of this** means that I hate the guys over at [Bouncy Castle](https://www.bouncycastle.org/) well, [you're wrong!](#lovethecastle)
 
