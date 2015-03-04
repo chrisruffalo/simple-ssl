@@ -1,8 +1,6 @@
-package com.github.chrisruffalo.simplessl.impl;
+package com.github.chrisruffalo.simplessl.impl.keys;
 
-import com.github.chrisruffalo.simplessl.Key;
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1OutputStream;
+import com.github.chrisruffalo.simplessl.api.keys.Key;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.util.encoders.Base64;
 
@@ -51,8 +49,8 @@ public abstract class KeyImpl implements Key {
     @Override
     public byte[] pem() {
         // create byte array stream and wrap it in a writer
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Writer destination = new OutputStreamWriter(baos);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        Writer destination = new OutputStreamWriter(byteArrayOutputStream);
 
         // write (unwrapped object)
         try(final JcaPEMWriter pemWriter = new JcaPEMWriter(destination)) {
@@ -64,7 +62,7 @@ public abstract class KeyImpl implements Key {
             return new byte[0];
         }
 
-        final byte[] bytes = baos.toByteArray();
+        final byte[] bytes = byteArrayOutputStream.toByteArray();
 
         return bytes;
     }

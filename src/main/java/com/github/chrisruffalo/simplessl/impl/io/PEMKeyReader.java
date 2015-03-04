@@ -1,8 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.io;
 
-import com.github.chrisruffalo.simplessl.Key;
-import com.github.chrisruffalo.simplessl.impl.PrivateKeyImpl;
-import com.github.chrisruffalo.simplessl.impl.PublicKeyImpl;
+import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.google.common.base.Optional;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.openssl.PEMKeyPair;
@@ -44,20 +42,14 @@ public class PEMKeyReader extends BaseKeyReader {
 
                         // get private key if it exists
                         final PrivateKey privateKey = pair.getPrivate();
-                        if (privateKey != null) {
-                            final com.github.chrisruffalo.simplessl.PrivateKey wrap = new PrivateKeyImpl(privateKey);
-                            return Optional.of((K) wrap);
-                        }
+                        return (Optional<K>)this.wrapPrivate(privateKey);
                     } else if(decoded instanceof SubjectPublicKeyInfo) {
                         final SubjectPublicKeyInfo info = (SubjectPublicKeyInfo)decoded;
                         final JcaPEMKeyConverter pemKeyConverter = new JcaPEMKeyConverter();
 
                         // get private key and return a wrapped one
                         final PublicKey key = pemKeyConverter.getPublicKey(info);
-                        if(key != null) {
-                            final com.github.chrisruffalo.simplessl.PublicKey wrap = new PublicKeyImpl(key);
-                            return Optional.of((K)wrap);
-                        }
+                        return (Optional<K>)this.wrapPublic(key);
                     } else {
                         this.logger().info("File was PEM encoded but not a key file (type: {})", decoded.getClass().getName());
                     }

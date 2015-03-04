@@ -1,6 +1,6 @@
-package com.github.chrisruffalo.simplessl.impl;
+package com.github.chrisruffalo.simplessl.impl.keys;
 
-import com.github.chrisruffalo.simplessl.Key;
+import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.Keys;
 import com.google.common.base.Optional;
 import org.apache.commons.io.FileUtils;

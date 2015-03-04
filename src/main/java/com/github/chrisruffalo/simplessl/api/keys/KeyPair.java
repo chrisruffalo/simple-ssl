@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.simplessl;
+package com.github.chrisruffalo.simplessl.api.keys;
 
 /**
  * Created by cruffalo on 2/24/15.

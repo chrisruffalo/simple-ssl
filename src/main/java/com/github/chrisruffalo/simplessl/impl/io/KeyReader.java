@@ -1,6 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.io;
 
-import com.github.chrisruffalo.simplessl.Key;
+import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.google.common.base.Optional;
 
 import java.io.InputStream;

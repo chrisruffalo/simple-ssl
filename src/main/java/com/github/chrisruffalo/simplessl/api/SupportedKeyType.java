@@ -1,16 +1,17 @@
-package com.github.chrisruffalo.simplessl;
+package com.github.chrisruffalo.simplessl.api;
 
 /**
  * Created by cruffalo on 2/24/15.
  */
-public enum SupportedKeyPairType {
+public enum SupportedKeyType {
 
-    RSA("RSA")
+    RSA("RSA"),
+    DSA("DSA")
     ;
 
     private final String type;
 
-    private SupportedKeyPairType(String typeString) {
+    private SupportedKeyType(String typeString) {
         this.type = typeString;
     }
 
@@ -20,3 +21,4 @@ public enum SupportedKeyPairType {
     }
 
 }
+

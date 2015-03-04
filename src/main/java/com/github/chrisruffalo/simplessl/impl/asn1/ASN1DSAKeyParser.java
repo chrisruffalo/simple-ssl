@@ -1,6 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.asn1;
 
-import com.github.chrisruffalo.simplessl.SupportedKeyType;
+import com.github.chrisruffalo.simplessl.api.SupportedKeyType;
 import com.github.chrisruffalo.simplessl.engine.Provider;
 import com.google.common.base.Optional;
 import org.bouncycastle.asn1.ASN1Integer;
@@ -12,9 +12,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.DSAPrivateKeySpec;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPrivateCrtKeySpec;
-import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 
 /**
  * Created by cruffalo on 2/25/15.

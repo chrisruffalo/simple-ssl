@@ -1,7 +1,7 @@
-package com.github.chrisruffalo.simplessl.impl;
+package com.github.chrisruffalo.simplessl.impl.keys;
 
-import com.github.chrisruffalo.simplessl.KeyPair;
-import com.github.chrisruffalo.simplessl.RSAKeyPair;
+import com.github.chrisruffalo.simplessl.api.keys.KeyPair;
+import com.github.chrisruffalo.simplessl.impl.keys.rsa.RSAKeyPairImpl;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,7 +15,7 @@ public class KeyPairImplTest {
 
     @BeforeClass
     public static void generate() {
-        KeyPairImplTest.pregenPair = RSAKeyPair.generate();
+        KeyPairImplTest.pregenPair = RSAKeyPairImpl.generate();
     }
 
     @Test

@@ -1,8 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.io;
 
-import com.github.chrisruffalo.simplessl.Key;
-import com.github.chrisruffalo.simplessl.impl.PrivateKeyImpl;
-import com.github.chrisruffalo.simplessl.impl.PublicKeyImpl;
+import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.impl.asn1.ASN1DSAKeyParser;
 import com.github.chrisruffalo.simplessl.impl.asn1.ASN1KeyParser;
 import com.github.chrisruffalo.simplessl.impl.asn1.ASN1RSAKeyParser;
@@ -63,20 +61,14 @@ public class DERKeyReader extends BaseKeyReader {
                         final KeyPair parsedPair = parsedPairOption.get();
 
                         final PrivateKey privateKey = parsedPair.getPrivate();
-                        if(null != privateKey) {
-                            final com.github.chrisruffalo.simplessl.PrivateKey wrap = new PrivateKeyImpl(privateKey);
-                            return Optional.of((K) wrap);
-                        }
+                        return (Optional<K>)this.wrapPrivate(privateKey);
                     } else if(seqSize > 0) { // assume public key (RSA or DSA figured by SubjectPublicKeyInfo)
                         final SubjectPublicKeyInfo info = new SubjectPublicKeyInfo(sequence);
                         final JcaPEMKeyConverter pemKeyConverter = new JcaPEMKeyConverter();
 
                         // get private key and return a wrapped one
                         final PublicKey key = pemKeyConverter.getPublicKey(info);
-                        if(key != null) {
-                            final com.github.chrisruffalo.simplessl.PublicKey wrap = new PublicKeyImpl(key);
-                            return Optional.of((K)wrap);
-                        }
+                        return (Optional<K>)this.wrapPublic(key);
                     } else {
                         this.logger().info("File did not provide enough ASN.1 data for an RSA/DSA key");
                     }

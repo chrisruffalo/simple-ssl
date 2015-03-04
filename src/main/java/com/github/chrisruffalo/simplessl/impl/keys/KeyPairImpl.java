@@ -1,8 +1,8 @@
-package com.github.chrisruffalo.simplessl.impl;
+package com.github.chrisruffalo.simplessl.impl.keys;
 
-import com.github.chrisruffalo.simplessl.KeyPair;
-import com.github.chrisruffalo.simplessl.PrivateKey;
-import com.github.chrisruffalo.simplessl.PublicKey;
+import com.github.chrisruffalo.simplessl.api.keys.KeyPair;
+import com.github.chrisruffalo.simplessl.api.keys.PrivateKey;
+import com.github.chrisruffalo.simplessl.api.keys.PublicKey;
 
 /**
  * Created by cruffalo on 2/25/15.

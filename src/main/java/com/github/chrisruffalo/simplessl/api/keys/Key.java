@@ -1,6 +1,4 @@
-package com.github.chrisruffalo.simplessl;
-
-import java.nio.file.Path;
+package com.github.chrisruffalo.simplessl.api.keys;
 
 /**
  * Created by cruffalo on 2/25/15.

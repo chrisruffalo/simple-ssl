@@ -1,5 +1,8 @@
 package com.github.chrisruffalo.simplessl;
 
+import com.github.chrisruffalo.simplessl.api.keys.Key;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAKey;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey;
 import com.google.common.base.Optional;
 import org.junit.Assert;
 import org.junit.Test;

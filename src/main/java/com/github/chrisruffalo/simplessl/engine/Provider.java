@@ -1,9 +1,14 @@
 package com.github.chrisruffalo.simplessl.engine;
 
-import com.github.chrisruffalo.simplessl.SupportedCipher;
-import com.github.chrisruffalo.simplessl.SupportedKeyPairType;
-import com.github.chrisruffalo.simplessl.SupportedKeyType;
+import com.github.chrisruffalo.simplessl.api.SupportedCipherType;
+import com.github.chrisruffalo.simplessl.api.SupportedKeyPairType;
+import com.github.chrisruffalo.simplessl.api.SupportedKeyType;
+import com.github.chrisruffalo.simplessl.api.SupportedSignatureType;
+import org.bouncycastle.crypto.params.DSAKeyGenerationParameters;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -13,7 +18,10 @@ import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.Security;
+import java.security.Signature;
+import java.security.spec.DSAParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
 /**
@@ -35,11 +43,11 @@ public final class Provider {
         }
     }
 
-    public static KeyPairGenerator getKeyPairGenerator(SupportedKeyPairType type, int bits, BigInteger exponent) {
+    public static KeyPairGenerator getRSAKeyPairGenerator(int bits, BigInteger exponent) {
 
         try {
             // generate key pair generator
-            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(type.toString(), Provider.PROVIDER_ID);
+            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(SupportedKeyPairType.RSA.toString(), Provider.PROVIDER_ID);
 
             // set up spec
             final RSAKeyGenParameterSpec spec = new RSAKeyGenParameterSpec(bits, exponent);
@@ -50,7 +58,30 @@ public final class Provider {
             // return
             return keyPairGenerator;
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Could not find algorithm '" + type.toString() + "', ensure BouncyCastle libraries are available", e);
+            throw new RuntimeException("Could not find algorithm '" + SupportedKeyPairType.RSA.toString() + "', ensure BouncyCastle libraries are available", e);
+        } catch (NoSuchProviderException e) {
+            throw new RuntimeException("Could not find provider '" + Provider.PROVIDER_ID + "', ensure BouncyCastle libraries are available", e);
+        } catch (InvalidAlgorithmParameterException e) {
+            throw new RuntimeException("Internal error: could not configure algorithm ('" + e.getMessage() + "')", e);
+        }
+    }
+
+    public static KeyPairGenerator getDSAKeyPairGenerator(BigInteger p, BigInteger q, BigInteger g) {
+
+        try {
+            // generate key pair generator
+            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(SupportedKeyPairType.DSA.toString(), Provider.PROVIDER_ID);
+
+            // set up spec
+            final DSAParameterSpec spec = new DSAParameterSpec(p,q,g);
+
+            // initialize
+            keyPairGenerator.initialize(spec);
+
+            // return
+            return keyPairGenerator;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Could not find algorithm '" + SupportedKeyPairType.RSA.toString() + "', ensure BouncyCastle libraries are available", e);
         } catch (NoSuchProviderException e) {
             throw new RuntimeException("Could not find provider '" + Provider.PROVIDER_ID + "', ensure BouncyCastle libraries are available", e);
         } catch (InvalidAlgorithmParameterException e) {
@@ -72,7 +103,22 @@ public final class Provider {
         }
     }
 
-    public static Cipher getCipher(SupportedCipher type) {
+    public static Signature getSignature(SupportedSignatureType signatureType) {
+        try {
+            // lookup signature
+            final Signature signature = Signature.getInstance(signatureType.toString(), Provider.PROVIDER_ID);
+
+            // return for use
+            return signature;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Could not find algorithm: " + signatureType.toString() + " with error: " + e.getMessage(), e);
+        } catch (NoSuchProviderException e) {
+            throw new RuntimeException("Could not find provider '" + Provider.PROVIDER_ID + "', ensure BouncyCastle libraries are available", e);
+        }
+
+    }
+
+    public static Cipher getCipher(SupportedCipherType type) {
 
         try {
             // create cipher
@@ -89,6 +135,16 @@ public final class Provider {
         }
     }
 
+    public static ContentSigner getContentSigner(SupportedSignatureType type, PrivateKey privateKey) {
+        // build provider
+        final JcaContentSignerBuilder builder = new JcaContentSignerBuilder(type.toString());
 
+        // return content signer from provider
+        try {
+            return builder.setProvider(Provider.PROVIDER_ID).build(privateKey);
+        } catch (OperatorCreationException e) {
+            throw new RuntimeException("Could not build content signer from provided settings with error: " + e.getMessage());
+        }
+    }
 
 }
