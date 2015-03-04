@@ -81,8 +81,14 @@ For maven you just need the dependency ```com.github.chrisruffalo:simplessl:1.0-
 
 # Using SimpleSSL
 
-This library is designed to have a *straightforward*, *simple*, and *fluent* API.  The primary consideration is *ease of use* and **never**
-performance or features.  The (API)[#api] has several main entry points that are outlined in the next section.  These are [Keys](#keys) and [Certificates](#certificates).
+This library is designed to have a *straightforward*, *simple*, and *fluent* API.  The primary considerations is *ease of use* and correct
+implementation.  SimpleSSL is not designed for speed or a full feature set. Where possible SimpleSSL maintains compatibility with the 
+Bouncy Castle libraries and the JCE.
+
+The internal implementation will default to secure options and will warn or correct the user where possible if 
+they are making insecure choices.
+
+The (API)[#api] has several main entry points that are outlined in the next section.  These are [Keys](#keys) and [Certificates](#certificates).
 
 ## Quick Facts
 
