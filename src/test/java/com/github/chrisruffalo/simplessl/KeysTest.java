@@ -3,7 +3,7 @@ package com.github.chrisruffalo.simplessl;
 import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAKey;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey;
-import com.google.common.base.Optional;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,10 +26,10 @@ public class KeysTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Optional<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = Keys.read(path);
 
         // should be present
-        Assert.assertTrue(keyOption.isPresent());
+        Assert.assertTrue(keyOption.successful());
 
         // get key
         Key key = keyOption.get();
@@ -49,10 +49,10 @@ public class KeysTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Optional<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = Keys.read(path);
 
         // should be present
-        Assert.assertTrue(keyOption.isPresent());
+        Assert.assertTrue(keyOption.successful());
 
         // get key
         Key key = keyOption.get();
@@ -72,10 +72,10 @@ public class KeysTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Optional<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = Keys.read(path);
 
         // should be present
-        Assert.assertTrue(keyOption.isPresent());
+        Assert.assertTrue(keyOption.successful());
 
         // get key
         Key key = keyOption.get();
@@ -96,10 +96,10 @@ public class KeysTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Optional<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = Keys.read(path);
 
         // should be present
-        Assert.assertTrue(keyOption.isPresent());
+        Assert.assertTrue(keyOption.successful());
 
         // get key
         Key key = keyOption.get();

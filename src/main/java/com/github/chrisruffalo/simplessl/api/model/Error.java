@@ -2,8 +2,6 @@ package com.github.chrisruffalo.simplessl.api.model;
 
 import com.google.common.base.Optional;
 
-import javax.swing.text.html.Option;
-
 /**
  * Created by cruffalo on 3/17/15.
  */

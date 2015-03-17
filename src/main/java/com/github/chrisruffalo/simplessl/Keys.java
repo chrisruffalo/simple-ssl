@@ -1,13 +1,12 @@
 package com.github.chrisruffalo.simplessl;
 
 import com.github.chrisruffalo.simplessl.api.keys.Key;
-import com.github.chrisruffalo.simplessl.api.keys.KeyPair;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAKeyPair;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import com.github.chrisruffalo.simplessl.impl.io.DERKeyReader;
 import com.github.chrisruffalo.simplessl.impl.io.KeyReader;
 import com.github.chrisruffalo.simplessl.impl.io.PEMKeyReader;
 import com.github.chrisruffalo.simplessl.impl.keys.rsa.RSAKeyPairImpl;
-import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,11 +84,10 @@ public final class Keys {
      * @param path to the key file (private or public)
      * @return optionally the Key read from the file
      */
-    public static <K extends Key> Optional<K> read(Path path) {
+    public static <K extends Key> Attempt<K> read(Path path) {
         // a path must be provided
         if(path == null) {
-            Keys.LOGGER.error("Cannot open null path");
-            return Optional.absent();
+            return Attempt.fail("Cannot open null path");
         }
 
         // normalize path
@@ -97,33 +95,31 @@ public final class Keys {
 
         // make sure it exists
         if(!Files.exists(path)) {
-            Keys.LOGGER.error("File at path: '{}' does not exist", path.toString());
-            return Optional.absent();
+            return Attempt.fail(String.format("File at path: '%s' does not exist", path.toString()));
         }
 
         // make sure it is a file and readable
         if(!Files.isRegularFile(path) || !Files.isReadable(path)) {
-            Keys.LOGGER.error("File at path '{}' must be a readable file", path.toString());
-            return Optional.absent();
+            return Attempt.fail(String.format("File at path: '%s' must be a readable file", path.toString()));
         }
 
         // make sure file has data, otherwise will probably choke on subsequent methods anyway
         try {
+            // error out if the file has no data
             if(Files.size(path) < 1) {
-                Keys.LOGGER.error("File at path '{}' has no content", path.toString());
+                return Attempt.fail(String.format("File at '%s' has no content", path.toString()));
             }
         } catch (IOException e) {
-            // do nothing, nothing to do, further reads will probably get I/O error though
+            // return error because there is nothing to do, further reads would probably get I/O error or otherwise choke
+            return Attempt.fail(String.format("Could not determine size of file at '%s'", path.toString()), e);
         }
 
         // read file
         try(InputStream stream = Files.newInputStream(path)) {
             return Keys.read(stream);
         } catch (IOException e) {
-            Keys.LOGGER.error("IO exception while reading file at '{}', error: {}", path.toString(), e.getMessage());
+            return Attempt.fail(String.format("IO exception while reading file at '%s', error: %s", path.toString(), e.getMessage()), e);
         }
-
-        return Optional.absent();
     }
 
     /**
@@ -132,21 +128,21 @@ public final class Keys {
      * @param input source byte array
      * @return optionally the Key read from the byte array
      */
-    public static <K extends Key> Optional<K> read(byte[] input) {
+    public static <K extends Key> Attempt<K> read(byte[] input) {
         // can't read null or empty bytes
         if(input == null || input.length < 1) {
-            Keys.LOGGER.error("Cannot read from empty or null byte array");
-            return Optional.absent();
+            return Attempt.fail("Cannot read from empty or null byte array");
         }
 
         for(KeyReader reader : Keys.READER_CHAIN) {
-            final Optional<K> keyFound = reader.read(input);
-            if(keyFound.isPresent()) {
+            final Attempt<K> keyFound = reader.read(input);
+            if(keyFound.successful()) {
                 return keyFound;
             }
         }
 
-        return Optional.absent();
+        // unspecified error, no key found
+        return Attempt.fail("No key found in input data");
     }
 
     /**
@@ -155,12 +151,11 @@ public final class Keys {
      * @param inputStream the source input stream for the key
      * @return optionally the Key read from the byte array
      */
-    public static <K extends Key> Optional<K> read(InputStream inputStream) {
+    public static <K extends Key> Attempt<K> read(InputStream inputStream) {
 
         // can't read null stream
         if(inputStream == null) {
-            Keys.LOGGER.error("Cannot read key from a null stream");
-            return Optional.absent();
+            return Attempt.fail("Cannot read key from a null stream");
         }
 
         // read input stream to bytes
@@ -168,8 +163,7 @@ public final class Keys {
         try {
             bytes = ByteStreams.toByteArray(inputStream);
         } catch (IOException e) {
-            Keys.LOGGER.error("Could not read stream");
-            return Optional.absent();
+            return Attempt.fail("Could not read stream");
         }
 
         return Keys.read(bytes);

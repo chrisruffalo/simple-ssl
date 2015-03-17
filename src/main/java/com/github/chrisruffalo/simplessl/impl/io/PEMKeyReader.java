@@ -1,7 +1,7 @@
 package com.github.chrisruffalo.simplessl.impl.io;
 
 import com.github.chrisruffalo.simplessl.api.keys.Key;
-import com.google.common.base.Optional;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
@@ -21,7 +21,7 @@ import java.security.PublicKey;
 public class PEMKeyReader extends BaseKeyReader {
 
     @Override
-    public <K extends Key> Optional<K> read(InputStream stream) {
+    public <K extends Key> Attempt<K> read(InputStream stream) {
         // create source reader from input stream
         try(final Reader sourceReader = new InputStreamReader(stream)) {
             // create pem reader
@@ -42,27 +42,25 @@ public class PEMKeyReader extends BaseKeyReader {
 
                         // get private key if it exists
                         final PrivateKey privateKey = pair.getPrivate();
-                        return (Optional<K>)this.wrapPrivate(privateKey);
+                        return (Attempt<K>)this.wrapPrivate(privateKey);
                     } else if(decoded instanceof SubjectPublicKeyInfo) {
                         final SubjectPublicKeyInfo info = (SubjectPublicKeyInfo)decoded;
                         final JcaPEMKeyConverter pemKeyConverter = new JcaPEMKeyConverter();
 
                         // get private key and return a wrapped one
                         final PublicKey key = pemKeyConverter.getPublicKey(info);
-                        return (Optional<K>)this.wrapPublic(key);
+                        return (Attempt<K>)this.wrapPublic(key);
                     } else {
-                        this.logger().info("File was PEM encoded but not a key file (type: {})", decoded.getClass().getName());
+                        return Attempt.fail(String.format("File was PEM encoded but not a key file (type: %s)", decoded.getClass().getName()));
                     }
-                    return Optional.absent();
                 }
             } catch (IOException e) {
-                this.logger().error("Failed to open object as PEM: {}", e.getMessage());
+                return Attempt.fail("Failed to open object as PEM: " + e.getMessage());
             }
         } catch (IOException e) {
-            this.logger().error("Could not open key file: {}", e.getMessage());
+            return Attempt.fail("Could not open key file: " + e.getMessage(), e);
         }
 
-        // return absent optional
-        return Optional.absent();
+        return Attempt.fail("Could not decode PEM key pair");
     }
 }

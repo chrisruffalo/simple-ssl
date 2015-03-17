@@ -1,8 +1,8 @@
 package com.github.chrisruffalo.simplessl.impl.asn1;
 
 import com.github.chrisruffalo.simplessl.api.SupportedKeyType;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import com.github.chrisruffalo.simplessl.engine.Provider;
-import com.google.common.base.Optional;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Sequence;
 
@@ -18,7 +18,7 @@ import java.security.spec.InvalidKeySpecException;
  */
 public class ASN1DSAKeyParser implements ASN1KeyParser {
 
-    public Optional<KeyPair> parse(ASN1Sequence sequence) {
+    public Attempt<KeyPair> parse(ASN1Sequence sequence) {
         // get values from asn1 sequence
         final ASN1Integer p = (ASN1Integer) sequence.getObjectAt(1);
         final ASN1Integer q = (ASN1Integer) sequence.getObjectAt(2);
@@ -44,12 +44,10 @@ public class ASN1DSAKeyParser implements ASN1KeyParser {
             final KeyPair pair = new KeyPair(publicKey, privateKey);
 
             // return
-            return Optional.of(pair);
+            return Attempt.succeed(pair);
         } catch (InvalidKeySpecException e) {
-            // todo: log error
+            return Attempt.fail("Error parsing DSA key from ASN1 sequence: " + e.getMessage(), e);
         }
-
-        return Optional.absent();
     }
 
 }

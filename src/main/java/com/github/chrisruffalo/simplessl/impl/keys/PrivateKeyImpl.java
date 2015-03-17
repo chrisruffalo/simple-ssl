@@ -2,8 +2,6 @@ package com.github.chrisruffalo.simplessl.impl.keys;
 
 import com.github.chrisruffalo.simplessl.api.keys.PrivateKey;
 import com.github.chrisruffalo.simplessl.api.keys.PublicKey;
-import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey;
-import com.github.chrisruffalo.simplessl.exception.InsufficientInformationException;
 import com.google.common.base.Optional;
 
 /**

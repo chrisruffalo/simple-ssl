@@ -1,6 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.asn1;
 
-import com.google.common.base.Optional;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import org.bouncycastle.asn1.ASN1Sequence;
 
 import java.security.KeyPair;
@@ -11,6 +11,6 @@ import java.security.KeyPair;
 public interface ASN1KeyParser {
 
     // get key pair
-    Optional<KeyPair> parse(ASN1Sequence sequence);
+    Attempt<KeyPair> parse(ASN1Sequence sequence);
 
 }

@@ -1,9 +1,9 @@
 package com.github.chrisruffalo.simplessl.impl.certificates;
 
+import com.github.chrisruffalo.simplessl.api.SupportedSignatureType;
 import com.github.chrisruffalo.simplessl.api.certificates.Certificate;
 import com.github.chrisruffalo.simplessl.api.certificates.CertificateBuilder;
 import com.github.chrisruffalo.simplessl.api.certificates.ExtendedCertificateBuilder;
-import com.github.chrisruffalo.simplessl.api.SupportedSignatureType;
 import com.github.chrisruffalo.simplessl.engine.Provider;
 import com.github.chrisruffalo.simplessl.impl.keys.PublicKeyImpl;
 import com.google.common.base.Optional;

@@ -143,7 +143,7 @@ public abstract class Attempt<VALUE> {
         if(warnings == null || warnings.length < 1) {
             return Attempt.succeed(value);
         }
-        List<Warning> warningList = Arrays.asList(warnings);
+        final List<Warning> warningList = Arrays.asList(warnings);
         return Attempt.succeed(value, warningList);
     }
 
@@ -155,6 +155,14 @@ public abstract class Attempt<VALUE> {
         return new FailedAttempt<>();
     }
 
+    public static <VALUE> Attempt<VALUE> fail(String message) {
+        return Attempt.fail(new Error(message));
+    }
+
+    public static <VALUE> Attempt<VALUE> fail(String message, Throwable cause) {
+        return Attempt.fail(new Error(message, cause));
+    }
+
     public static <VALUE> Attempt<VALUE> fail(Error error) {
         return new FailedAttempt<>(Collections.singletonList(error));
     }
@@ -163,7 +171,7 @@ public abstract class Attempt<VALUE> {
         if(errors == null || errors.length < 1) {
             return Attempt.fail();
         }
-        List<Error> errorList = Arrays.asList(errors);
+        final List<Error> errorList = Arrays.asList(errors);
         return Attempt.fail(errorList);
     }
 
@@ -177,5 +185,62 @@ public abstract class Attempt<VALUE> {
 
     public static <VALUE> Attempt<VALUE> fail(List<Error> errors, List<Warning> warnings) {
         return new FailedAttempt<>(errors, warnings);
+    }
+
+    public static List<Object> values(List<Attempt<?>> attempts) {
+        if(attempts == null || attempts.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        final List<Object> values = new LinkedList<>();
+        for(Attempt<?> attempt : attempts) {
+            if(attempt.failed()) {
+                continue;
+            }
+
+            Object value = attempt.get();
+            if(value != null) {
+                values.add(value);
+            }
+        }
+
+        // return values
+        return Collections.unmodifiableList(values);
+    }
+
+    public static List<Warning> warnings(List<Attempt<?>> attempts) {
+        if(attempts == null || attempts.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        final List<Warning> warnings = new LinkedList<>();
+        for(Attempt<?> attempt : attempts) {
+            if(!attempt.hasWarnings()) {
+                continue;
+            }
+
+            warnings.addAll(attempt.warnings());
+        }
+
+        // return warnings
+        return Collections.unmodifiableList(warnings);
+    }
+
+    public static List<Error> errors(List<Attempt<?>> attempts) {
+        if(attempts == null || attempts.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        final List<Error> errors = new LinkedList<>();
+        for(Attempt<?> attempt : attempts) {
+            if(!attempt.hasErrors()) {
+                continue;
+            }
+
+            errors.addAll(attempt.errors());
+        }
+
+        // return warnings
+        return Collections.unmodifiableList(errors);
     }
 }

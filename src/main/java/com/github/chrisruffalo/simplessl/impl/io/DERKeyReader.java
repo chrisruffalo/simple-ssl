@@ -1,10 +1,11 @@
 package com.github.chrisruffalo.simplessl.impl.io;
 
 import com.github.chrisruffalo.simplessl.api.keys.Key;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
+import com.github.chrisruffalo.simplessl.api.model.Error;
 import com.github.chrisruffalo.simplessl.impl.asn1.ASN1DSAKeyParser;
 import com.github.chrisruffalo.simplessl.impl.asn1.ASN1KeyParser;
 import com.github.chrisruffalo.simplessl.impl.asn1.ASN1RSAKeyParser;
-import com.google.common.base.Optional;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -18,6 +19,8 @@ import java.io.InputStream;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by cruffalo on 2/26/15.
@@ -25,7 +28,9 @@ import java.security.PublicKey;
 public class DERKeyReader extends BaseKeyReader {
 
     @Override
-    public <K extends Key> Optional<K> read(InputStream stream) {
+    public <K extends Key> Attempt<K> read(InputStream stream) {
+        List<Error> errors = new LinkedList<>();
+
         // read into a byte stream
         try(final InputStream from = new BufferedInputStream(stream);) {
             // create new input stream from buffered file input stream
@@ -43,48 +48,45 @@ public class DERKeyReader extends BaseKeyReader {
                     // save size
                     final int seqSize = sequence.size();
 
-                    // say size
-                    this.logger().trace("asn1 sequence size: {}", seqSize);
-
                     // check sizes
                     if(seqSize >= 5) { // assume "RSA" private key type
                         // decide on key parser based on sequence size, assume DSA for >=5 and RSA for >= 8
                         final ASN1KeyParser asn1KeyParser = seqSize >= 8 ? new ASN1RSAKeyParser() : new ASN1DSAKeyParser();
 
                         // parse pair and create output
-                        final Optional<KeyPair> parsedPairOption = asn1KeyParser.parse(sequence);
+                        final Attempt<KeyPair> parsedPairOption = asn1KeyParser.parse(sequence);
 
                         // check for a return value
-                        if(!parsedPairOption.isPresent()) {
-                            return Optional.absent();
+                        if(!parsedPairOption.successful()) {
+                            return Attempt.fail(parsedPairOption.errors(), parsedPairOption.warnings());
                         }
                         final KeyPair parsedPair = parsedPairOption.get();
 
+                        // get private key and return a wrapped version
                         final PrivateKey privateKey = parsedPair.getPrivate();
-                        return (Optional<K>)this.wrapPrivate(privateKey);
+                        return (Attempt<K>)this.wrapPrivate(privateKey);
                     } else if(seqSize > 0) { // assume public key (RSA or DSA figured by SubjectPublicKeyInfo)
                         final SubjectPublicKeyInfo info = new SubjectPublicKeyInfo(sequence);
                         final JcaPEMKeyConverter pemKeyConverter = new JcaPEMKeyConverter();
 
                         // get private key and return a wrapped one
                         final PublicKey key = pemKeyConverter.getPublicKey(info);
-                        return (Optional<K>)this.wrapPublic(key);
+                        return (Attempt<K>)this.wrapPublic(key);
                     } else {
-                        this.logger().info("File did not provide enough ASN.1 data for an RSA/DSA key");
+                        errors.add(new Error("File did not provide enough ASN.1 data for an RSA/DSA key"));
                     }
                 } else {
-                    this.logger().info("File did not provide ASN.1 data");
+                    errors.add(new Error("File did not provide ASN.1 data"));
                 }
             } catch (IOException e) {
-                // couldn't read object
-                // but what do?
-                this.logger().error("Error opening object: {}", e.getMessage(), e);
+                return Attempt.fail("Error opening object: " + e.getMessage(), e);
             }
         } catch (IOException e) {
-            this.logger().error("Could not open key file: {}", e.getMessage());
+            return Attempt.fail("Could not open key file: " + e.getMessage(), e);
         }
 
         // return absent optional
-        return Optional.absent();
+        errors.add(new Error("Could not parse DER data from given input"));
+        return Attempt.fail(errors);
     }
 }

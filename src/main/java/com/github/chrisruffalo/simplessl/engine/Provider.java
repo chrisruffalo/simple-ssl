@@ -4,7 +4,6 @@ import com.github.chrisruffalo.simplessl.api.SupportedCipherType;
 import com.github.chrisruffalo.simplessl.api.SupportedKeyPairType;
 import com.github.chrisruffalo.simplessl.api.SupportedKeyType;
 import com.github.chrisruffalo.simplessl.api.SupportedSignatureType;
-import org.bouncycastle.crypto.params.DSAKeyGenerationParameters;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;

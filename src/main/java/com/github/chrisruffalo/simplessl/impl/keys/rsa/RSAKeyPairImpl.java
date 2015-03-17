@@ -1,6 +1,5 @@
 package com.github.chrisruffalo.simplessl.impl.keys.rsa;
 
-import com.github.chrisruffalo.simplessl.api.SupportedKeyPairType;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAKeyPair;
 import com.github.chrisruffalo.simplessl.engine.Provider;
 import com.github.chrisruffalo.simplessl.impl.keys.KeyPairImpl;

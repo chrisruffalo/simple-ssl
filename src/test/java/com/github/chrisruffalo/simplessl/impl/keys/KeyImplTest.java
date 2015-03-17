@@ -1,8 +1,8 @@
 package com.github.chrisruffalo.simplessl.impl.keys;
 
-import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.Keys;
-import com.google.common.base.Optional;
+import com.github.chrisruffalo.simplessl.api.keys.Key;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -46,10 +46,10 @@ public class KeyImplTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Optional<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = Keys.read(path);
 
         // found key
-        Assert.assertTrue(keyOption.isPresent());
+        Assert.assertTrue(keyOption.successful());
 
         // create temporary path
         Path tempPemPath = Files.createTempFile(KeyImplTest.tempDir, "private_from_pem_", "_key.pem");

@@ -7,6 +7,7 @@ import com.github.chrisruffalo.simplessl.api.certificates.CertificateBuilder;
 import com.github.chrisruffalo.simplessl.api.keys.KeyPair;
 import com.github.chrisruffalo.simplessl.api.keys.PrivateKey;
 import com.github.chrisruffalo.simplessl.api.keys.PublicKey;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import com.github.chrisruffalo.simplessl.impl.keys.rsa.RSAKeyPairImpl;
 import com.google.common.base.Optional;
 import org.junit.Test;
@@ -36,8 +37,8 @@ public class CertificateBuilderImplTest {
         final Path publicKeyPath = Paths.get(publicKeyURL.toURI());
 
         // read keys
-        Optional<PrivateKey<PublicKey>> privateKey = Keys.read(privateKeyPath);
-        Optional<PublicKey> publicKey = Keys.read(publicKeyPath);
+        Attempt<PrivateKey<PublicKey>> privateKey = Keys.read(privateKeyPath);
+        Attempt<PublicKey> publicKey = Keys.read(publicKeyPath);
 
         // create certificate builder
         final CertificateBuilder builder = Certificates.builder();
