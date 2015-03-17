@@ -151,7 +151,7 @@ you can determine if the key was found without having to sort through a bunch of
 ## API Overview <a name="api"></a>
 
 * [Keys](#keys)
-* [Certificates](#certificates)
+* [x509 Certificates](#certificates)
 
 ### Keys <a name="keys"></a>
 

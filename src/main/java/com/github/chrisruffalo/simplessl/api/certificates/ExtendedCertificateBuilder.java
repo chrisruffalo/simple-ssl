@@ -7,4 +7,6 @@ public interface ExtendedCertificateBuilder extends CertificateBuilder {
 
     ExtendedCertificateBuilder useAsCA(boolean useAsCA);
 
+
+
 }
