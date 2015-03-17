@@ -168,10 +168,12 @@ One line that *matches* the way that the OpenSSL, Ruby, C, C++, C\#, Python, and
 
 ``` java
 Path privateKeyPath = Paths.get("/keys/private_key.pem");
-Attempt<RSAPrivateKey> privateRSAKeyOption = Keys.read(privateKeyPath);
+Attempt<RSAPrivateKey> readAttempt = Keys.read(privateKeyPath);
+RSAPrivateKey privateKey = readAttempt.get();
 ```
 
-Read, in just about any common format, a private key file.  If something goes wrong the key will be absent from the Option.
+Read, in just about any common format, a private key file.  If something goes wrong the key will be absent from the Attempt and errors 
+will be present describing what went wrong.
 
 ### **Write a Key to DER or PEM**
 
@@ -196,7 +198,7 @@ Attempt<RSAPublicKey> publicKey = privateKey.publicKey();
 ```
 
 This depends on the ability to derive/reconstruct the private key from what was given and may not be available with all types so it comes with an Attempt<> so that
-you can determine if the key was found without having to sort through a bunch of nasty exceptions.
+you can determine if the key was found without having to sort through exceptions.
 
 ## API Overview <a name="api"></a>
 
@@ -431,8 +433,8 @@ and how SimpleSSL deals with the tasks that can be painful without the simplifie
 Bouncy Castle is amazing!  I could never, ever, ever begin to implement the things that they have.  But it is rather general, and that's nobody's fault, because
 it is an implementation, and a really comprehensive one, of the [JCE](http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html).
   
-What it is not is a specific compatibility layer or companion to OpenSSL or any other specific implementation.  We utilize their work heavily, trust it, and
-couldn't do any of this without it.
+What it is not is a specific compatibility layer or companion to OpenSSL or any other specific implementation.  SimpleSSL uses their work heavily, trusts it, and
+couldn't do anything without it.
 
 ## Conclusion
 
