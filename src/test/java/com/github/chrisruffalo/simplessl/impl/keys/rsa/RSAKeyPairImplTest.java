@@ -4,8 +4,7 @@ import com.github.chrisruffalo.simplessl.api.keys.KeyPair;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAKeyPair;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey;
-import com.github.chrisruffalo.simplessl.impl.keys.rsa.RSAKeyPairImpl;
-import com.google.common.base.Optional;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,11 +54,11 @@ public class RSAKeyPairImplTest {
         final RSAPrivateKey privateKey = pair.privateKey();
 
         // get public key from private key
-        final Optional<RSAPublicKey> publicKeyReconstructedOption = privateKey.publicKey();
+        final Attempt<RSAPublicKey> publicKeyReconstructedOption = privateKey.publicKey();
 
         // should have option
-        Assert.assertTrue(publicKeyReconstructedOption.isPresent());
-
+        Assert.assertTrue(publicKeyReconstructedOption.successful());
+        
         // get from option
         final RSAPublicKey fromPrivate = publicKeyReconstructedOption.get();
 

@@ -2,7 +2,7 @@ package com.github.chrisruffalo.simplessl.impl.keys;
 
 import com.github.chrisruffalo.simplessl.api.keys.PrivateKey;
 import com.github.chrisruffalo.simplessl.api.keys.PublicKey;
-import com.google.common.base.Optional;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 
 /**
  * Created by cruffalo on 2/25/15.
@@ -29,8 +29,8 @@ public class PrivateKeyImpl<K extends PublicKey> extends KeyImpl implements Priv
     public boolean isPublic() { return false; }
 
     @Override
-    public Optional<K> publicKey() {
+    public Attempt<K> publicKey() {
         // not enough information
-        return Optional.absent();
+        return Attempt.fail("By default there is not enough information to reconstruct a public key from existing information");
     }
 }

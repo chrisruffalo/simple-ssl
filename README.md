@@ -85,8 +85,7 @@ This library is designed to have a *straightforward*, *simple*, and *fluent* API
 implementation.  SimpleSSL is not designed for speed or a full feature set. Where possible SimpleSSL maintains compatibility with the 
 Bouncy Castle libraries and the JCE.
 
-The internal implementation will default to secure options and will warn or correct the user where possible if 
-they are making insecure choices.
+The internal implementation will default to secure options and will warn or correct the user where possible if they are making insecure choices.
 
 The (API)[#api] has several main entry points that are outlined in the next section.  These are [Keys](#keys) and [Certificates](#certificates).
 
@@ -96,13 +95,14 @@ Most of the objects in the API that have a direct analog in the JCE are type-com
 to convert to a JCE object if required.  Objects, like ```KeyPair```, that cannot extend interfaces and types from the JCE API also support ```unwrap()``` so that
 they can be used with JCE types.
 
-The SimpleSSL API also makes use of ```Optional<>``` and ```Either<>``` to support safe programming.  This allows the user to inspect many of the returned values without worrying
+The SimpleSSL API also makes use of ```Optional<>``` and ```Attempt<>``` to support safe programming.  This allows the user to inspect many of the returned values without worrying
 about NullPointer exceptions.  SimpleSSL makes it a policy to avoid returning nulls or throwing checked **or** unchecked exceptions where possible.
 
-If something goes wrong SimpleSSL will return an empty Optional<> or an Either<> populated (right side) with errors.  Warnings and suggestions will be logged using SLF4J so that
-the consumers of SLF4J can have an opportunity to see and fix their mistakes during testing.
+If something goes wrong SimpleSSL will return an empty Optional<> or an Attempt<> populated with errors.  The Attempt object also supports warnings so that
+the consumers of SLF4J can have an opportunity to see and fix their mistakes during testing.  An example warning might cover a cipher that shouldn't be used, 
+a key size that is too weak, or other recognizable security mistakes.
 
-The Optional<> implementation comes from Guava for supporting the 1.7 JDK and the Either<> implementation is part of the SimpleSSL API.
+The Optional<> implementation comes from Guava for supporting the 1.7 JDK and the Attempt<> implementation is part of the SimpleSSL API.
 
 ## Quick Examples <a name="examples"></a>
 
@@ -118,7 +118,7 @@ One line that *matches* the way that the OpenSSL, Ruby, C, C++, C\#, Python, and
 
 ``` java
 Path privateKeyPath = Paths.get("/keys/private_key.pem");
-Optional<RSAPrivateKey> privateRSAKeyOption = Keys.read(privateKeyPath);
+Attempt<RSAPrivateKey> privateRSAKeyOption = Keys.read(privateKeyPath);
 ```
 
 Read, in just about any common format, a private key file.  If something goes wrong the key will be absent from the Option.
@@ -139,13 +139,13 @@ That's it!  It uses Java new file API to handle the paths and it provides a simp
 
 ``` java
 Path privateKeyPath = Paths.get("/keys/private_key.pem");
-Optional<RSAPrivateKey> privateKeyOption = Keys.read(privateKeyPath);
+Attempt<RSAPrivateKey> readAttempt = Keys.read(privateKeyPath);
 
-RSAPrivateKey privateKey = privateKeyOption.get();
+RSAPrivateKey privateKey = readAttempt.get();
 Optional<RSAPublicKey> publicKey = privateKey.publicKey();
 ```
 
-This depends on the ability to derive/reconstruct the private key from what was given and may not be available with all types so it comes with an Optional<> so that
+This depends on the ability to derive/reconstruct the private key from what was given and may not be available with all types so it comes with an Attempt<> so that
 you can determine if the key was found without having to sort through a bunch of nasty exceptions.
 
 ## API Overview <a name="api"></a>

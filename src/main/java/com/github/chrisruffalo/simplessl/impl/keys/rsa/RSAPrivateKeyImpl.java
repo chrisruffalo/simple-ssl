@@ -3,9 +3,9 @@ package com.github.chrisruffalo.simplessl.impl.keys.rsa;
 import com.github.chrisruffalo.simplessl.api.SupportedKeyType;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import com.github.chrisruffalo.simplessl.engine.Provider;
 import com.github.chrisruffalo.simplessl.impl.keys.PrivateKeyImpl;
-import com.google.common.base.Optional;
 
 import java.math.BigInteger;
 import java.security.Key;
@@ -25,7 +25,7 @@ public class RSAPrivateKeyImpl extends PrivateKeyImpl<RSAPublicKey> implements R
     }
 
     @Override
-    public Optional<RSAPublicKey> publicKey() {
+    public Attempt<RSAPublicKey> publicKey() {
         final Key key = this.unwrap();
         if(key instanceof RSAPrivateCrtKey) {
             // get spec
@@ -42,15 +42,13 @@ public class RSAPrivateKeyImpl extends PrivateKeyImpl<RSAPublicKey> implements R
                 if(publicKey instanceof java.security.interfaces.RSAPublicKey) {
                     final java.security.interfaces.RSAPublicKey rsaPublicKey = (java.security.interfaces.RSAPublicKey)publicKey;
                     final RSAPublicKey impl = new RSAPublicKeyImpl(rsaPublicKey);
-                    return Optional.of(impl);
+                    return Attempt.succeed(impl);
                 }
             } catch (InvalidKeySpecException e) {
-                //throw new RuntimeException("An invalid public key specification was provided for reconstruction the public key", e);
-                return Optional.absent();
+                return Attempt.fail("An invalid public key specification was provided for reconstruction of the public key", e);
             }
         }
-        //throw new InsufficientInformationException("The underlying private key type did not have sufficient information to reconstruct the public key");
-        return Optional.absent();
+        return Attempt.fail("Insufficient information for reconstructing the public key.");
     }
 
     @Override
