@@ -15,9 +15,9 @@ public class AttemptTest {
 
     @Test
     public void testSuccess() {
-        String initial = "success!";
-        Attempt<String> stringAttempt = Attempt.succeed(initial);
-        String value = stringAttempt.get();
+        final String initial = "success!";
+        final Attempt<String> stringAttempt = Attempt.succeed(initial);
+        final String value = stringAttempt.get();
 
         Assert.assertTrue(stringAttempt.successful());
         Assert.assertEquals(initial, value);
@@ -36,7 +36,7 @@ public class AttemptTest {
 
     @Test
     public void testSuccessWithWarnings() {
-        Attempt<String> stringAttempt = Attempt.succeed("success, with warnings", new Warning("bad string"), new Warning("not a good string"));
+        final Attempt<String> stringAttempt = Attempt.succeed("success, with warnings", new Warning("bad string"), new Warning("not a good string"));
 
         Assert.assertTrue(stringAttempt.successful());
         Assert.assertTrue(stringAttempt.hasWarnings());
@@ -47,7 +47,7 @@ public class AttemptTest {
 
     @Test
     public void testFailed() {
-        Attempt<String> failed = Attempt.fail();
+        final Attempt<String> failed = Attempt.fail();
 
         // check default state
         Assert.assertTrue(failed.failed());
@@ -66,7 +66,7 @@ public class AttemptTest {
 
     @Test
     public void testFailedWithError() {
-        Attempt<String> failed = Attempt.fail(new Error("bad!"));
+        final Attempt<String> failed = Attempt.fail(new Error("bad!"));
 
         Assert.assertNotNull(failed.errors());
         Assert.assertTrue(failed.hasErrors());
@@ -75,7 +75,7 @@ public class AttemptTest {
 
     @Test
     public void testFailedWithErrorArray() {
-        Attempt<String> failed = Attempt.fail(new Error("bad1"), new Error("bad2"));
+        final Attempt<String> failed = Attempt.fail(new Error("bad1"), new Error("bad2"));
 
         Assert.assertNotNull(failed.errors());
         Assert.assertTrue(failed.hasErrors());
@@ -84,12 +84,12 @@ public class AttemptTest {
 
     @Test
     public void testFailedWithErrorList() {
-        List<Error> errors = new LinkedList<>();
+        final List<Error> errors = new LinkedList<>();
         errors.add(new Error("error1"));
         errors.add(new Error("error2"));
         errors.add(new Error("error3"));
 
-        Attempt<String> failed = Attempt.fail(errors);
+        final Attempt<String> failed = Attempt.fail(errors);
         Assert.assertNotNull(failed.errors());
         Assert.assertFalse(failed.hasWarnings());
         Assert.assertTrue(failed.hasErrors());
@@ -98,18 +98,19 @@ public class AttemptTest {
 
     @Test
     public void testFailedWithErrorListAndWarningList() {
-        List<Error> errors = new LinkedList<>();
+        final List<Error> errors = new LinkedList<>();
         errors.add(new Error("error1"));
         errors.add(new Error("error2"));
         errors.add(new Error("error3"));
 
-        List<Warning> warnings = new LinkedList<>();
+        final List<Warning> warnings = new LinkedList<>();
         warnings.add(new Warning("warning1"));
         warnings.add(new Warning("warning2"));
         warnings.add(new Warning("warning3"));
         warnings.add(new Warning("warning4"));
 
-        Attempt<String> failed = Attempt.fail(errors, warnings);
+        final Attempt<String> failed = Attempt.fail(errors, warnings);
+
         Assert.assertNotNull(failed.errors());
         Assert.assertNotNull(failed.warnings());
         Assert.assertTrue(failed.hasErrors());
@@ -121,12 +122,12 @@ public class AttemptTest {
 
     @Test
     public void testFailedWithSingleErrorAndWarningList() {
-        List<Warning> warnings = new LinkedList<>();
+        final List<Warning> warnings = new LinkedList<>();
         warnings.add(new Warning("warning1"));
         warnings.add(new Warning("warning2"));
         warnings.add(new Warning("warning3"));
 
-        Attempt<String> failed = Attempt.fail(new Error("error!"), warnings);
+        final Attempt<String> failed = Attempt.fail(new Error("error!"), warnings);
         Assert.assertNotNull(failed.errors());
         Assert.assertNotNull(failed.warnings());
         Assert.assertTrue(failed.hasErrors());

@@ -58,7 +58,7 @@ public class RSAKeyPairImplTest {
 
         // should have option
         Assert.assertTrue(publicKeyReconstructedOption.successful());
-        
+
         // get from option
         final RSAPublicKey fromPrivate = publicKeyReconstructedOption.get();
 

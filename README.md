@@ -85,11 +85,9 @@ This library is designed to have a *straightforward*, *simple*, and *fluent* API
 implementation.  SimpleSSL is not designed for speed or a full feature set. Where possible SimpleSSL maintains compatibility with the 
 Bouncy Castle libraries and the JCE.
 
-The internal implementation will default to secure options and will warn or correct the user where possible if they are making insecure choices.
+The internal implementation will default to secure options and will attempt to warn or correct the user/implementor where possible if they are making insecure choices.
 
-The (API)[#api] has several main entry points that are outlined in the next section.  These are [Keys](#keys) and [Certificates](#certificates).
-
-## Quick Facts
+## Design Notes
 
 Most of the objects in the API that have a direct analog in the JCE are type-compatible where possible.  These objects can be unwrapped through the ```unwrap()``` method
 to convert to a JCE object if required.  Objects, like ```KeyPair```, that cannot extend interfaces and types from the JCE API also support ```unwrap()``` so that
@@ -98,13 +96,65 @@ they can be used with JCE types.
 The SimpleSSL API also makes use of ```Optional<>``` and ```Attempt<>``` to support safe programming.  This allows the user to inspect many of the returned values without worrying
 about NullPointer exceptions.  SimpleSSL makes it a policy to avoid returning nulls or throwing checked **or** unchecked exceptions where possible.
 
-If something goes wrong SimpleSSL will return an empty Optional<> or an Attempt<> populated with errors.  The Attempt object also supports warnings so that
+If something goes wrong SimpleSSL will return an empty Optional<> or an [Attempt<>](attempt) populated with errors.  The Attempt object also supports warnings so that
 the consumers of SLF4J can have an opportunity to see and fix their mistakes during testing.  An example warning might cover a cipher that shouldn't be used, 
 a key size that is too weak, or other recognizable security mistakes.
 
 The Optional<> implementation comes from Guava for supporting the 1.7 JDK and the Attempt<> implementation is part of the SimpleSSL API.
 
-## Quick Examples <a name="examples"></a>
+## More about ```Attempt```  <a name="attempt"></a>
+
+The SimpleSSL library comes with a class very much like Optional called ```Attempt```.  The ```Attempt``` class is somewhat of a combination of Optional 
+and [Maybe](https://en.wikipedia.org/wiki/Monad_%28functional_programming%29) with a little bit of Deffer/Promise baked in.  The idea behind the ```Attempt``` 
+is that it gives the user a few ways to handle errors while being flexible and without resorting to complicated exception handling.  Whatever your ideas
+on exception handling this works to both protect the APIs users from null pointer references while giving some context in the event of a failure.
+
+Let's take a quick look at the ```Attempt``` API:
+
+``` java
+public abstract class Attempt<VALUE> {
+    VALUE get();
+    boolean failed();
+    boolean successful();
+    boolean hasErrors();
+    List<Error> errors();
+    boolean hasWarnings();
+    List<Warning> warnings();
+}
+```
+When you, as a user of the API, make an ```Attempt``` the return state can be one of several outcomes:
+
+* A successful attempt with a return value object
+* A successful attempt with a return value object that has warnings
+* A failed attempt
+* A failed attempt with only warnings
+* A failed attempt with only errors
+* A failed attempt with errors and warnings
+
+So, what does that get you, really?  It allows you to *attempt* an action and then inspect the results.  If a key was generated then you can 
+continue with the execution of your code with or without looking for warnings.
+
+If an attempt fails then you can immediately halt, go down another logic path, or just log the warnings and errors and move on. The flexibility 
+is no different than the exceptions that you are used to handling but it can be leveraged in different ways to produce cleaner execution as well 
+as deeper insight into any error case.
+
+Each ```Attempt``` can have multiple warnings as well as errors.  This allows more context and information on failures to be collected than any 
+single exception.  It is intended that by providing more information to the end user they can either take corrective action or change their
+implementation to avoid the error cases that are reported during testing and integration steps instead of just hoping to catch all of the
+possible exceptions.
+
+## Exceptions and Errors
+
+It is the general viewpoint of SimpleSSL to never throw an exception, checked or unchecked, unless there is a fundamental error within the
+framework that could not be recovered from.  This includes, but is not limited to, things like Bouncy Castle not being initialized and security
+provider failures.
+
+Otherwise, if an error is encountered, an Optional with absent value or a failed Attempt (possibly with errors attached) will be returned instead 
+of a null object or unchecked exception.  This is to give the users of the API a mechanism for deciding if they want to log, halt, or continue.
+
+The SimpleSSL API will never return a null object.  If a null instance is found then it is an issue and should be reported.
+
+## Examples <a name="examples"></a>
 
 ### **Generate a RSA Key**
 
@@ -142,7 +192,7 @@ Path privateKeyPath = Paths.get("/keys/private_key.pem");
 Attempt<RSAPrivateKey> readAttempt = Keys.read(privateKeyPath);
 
 RSAPrivateKey privateKey = readAttempt.get();
-Optional<RSAPublicKey> publicKey = privateKey.publicKey();
+Attempt<RSAPublicKey> publicKey = privateKey.publicKey();
 ```
 
 This depends on the ability to derive/reconstruct the private key from what was given and may not be available with all types so it comes with an Attempt<> so that
@@ -155,7 +205,8 @@ you can determine if the key was found without having to sort through a bunch of
 
 ### Keys <a name="keys"></a>
 
-The entry point for Keys is ```com.github.chrisruffalo.simplessl.Keys```.  This is used to read Keys, generate Keys, and otherwise 
+The entry point for Keys is ```com.github.chrisruffalo.simplessl.Keys```.  This is used to read Keys, generate Keys, and otherwise manipulate keys as you would
+in OpenSSL.  The analogous commands in OpenSSL would be those that generate, modify, and inspect key files.
 
 ### Certificates <a name="certificates"></a>
 
