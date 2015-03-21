@@ -1,18 +1,34 @@
 package com.github.chrisruffalo.simplessl.api.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 /**
- * Created by cruffalo on 3/17/15.
+ * <p>An <code>Attempt</code> is a wrapper for an attempt to complete
+ * an action that may fail. If the action succeeds then the attempt
+ * will contain the result of the action. It cannot contain a null
+ * result.</p>
+ * <p>If the action fails then an attempt will be still be returned
+ * and can be inspected via the failed() method which will return
+ * false.</p>
+ * <p>If warnings are created during the attempt they can be checked
+ * with the warnings() method.</p>
  */
 public abstract class Attempt<VALUE> {
+
+    private final String id;
 
     private final List<Warning> warnings;
 
     private Attempt() {
+        // generate id for the attempt
+        this.id = UUID.randomUUID().toString();
         this.warnings = new LinkedList<>();
     }
 
@@ -23,6 +39,17 @@ public abstract class Attempt<VALUE> {
         if(warnings != null && !warnings.isEmpty()) {
             this.warnings.addAll(warnings);
         }
+    }
+
+    /**
+     * A unique id for the attempt. This is helpful for
+     * auditing and differentiating between multiple
+     * different attempts.
+     *
+     * @return
+     */
+    public String id() {
+        return this.id;
     }
 
     public abstract VALUE get();
@@ -48,6 +75,67 @@ public abstract class Attempt<VALUE> {
         return Collections.unmodifiableList(this.warnings);
     }
 
+    /**
+     * Log an audit message directly from the attempt. This method
+     * uses it's own logger.
+     */
+    public void audit() {
+        final Logger logger = LoggerFactory.getLogger("attempt-" + this.id);
+        this.audit(logger);
+    }
+
+    /**
+     * Print audit log message to provided logger.
+     *
+     * @param logger
+     */
+    public void audit(Logger logger) {
+        final StringBuilder builder = new StringBuilder("\n");
+
+        // print warnings
+        final List<Warning> warnings = this.warnings();
+        if(!warnings.isEmpty()) {
+            builder.append("There were ");
+            builder.append(warnings.size());
+            builder.append(" warnings");
+            for(final Warning warning : warnings) {
+                final String msg = warning.message();
+                if(msg != null && !msg.isEmpty()) {
+                    builder.append("\n");
+                    builder.append(msg);
+                }
+            }
+        }
+
+        // print errors
+        final List<Error> errors = this.errors();
+        if(!errors.isEmpty()) {
+            builder.append("There were ");
+            builder.append(errors.size());
+            builder.append(" errors");
+            for(final Error error : errors) {
+                final String msg = error.message();
+                if(msg != null && !msg.isEmpty()) {
+                    builder.append("\n");
+                    builder.append(msg);
+                    if(error.hasCause()) {
+                        final Throwable throwable = error.cause();
+                        final String cause = throwable.getMessage();
+                        if(cause != null && !cause.isEmpty()) {
+                            builder.append("\tCause: " + cause);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Encapsulates a value with an attempt succeeds. That value can
+     * never be null.
+     *
+     * @param <VALUE> the value type encapsulated by the attempt
+     */
     private static final class ValueAttempt<VALUE> extends Attempt<VALUE> {
 
         private final VALUE value;
@@ -87,6 +175,13 @@ public abstract class Attempt<VALUE> {
 
     }
 
+    /**
+     * Represents a failed attempt. The get() operation will throw
+     * an exception if called when failed() is true. If any errors
+     * were produced they can be checked with the errors() method.
+     *
+     * @param <VALUE>
+     */
     private static final class FailedAttempt<VALUE> extends Attempt<VALUE> {
 
         private final List<Error> errors;
