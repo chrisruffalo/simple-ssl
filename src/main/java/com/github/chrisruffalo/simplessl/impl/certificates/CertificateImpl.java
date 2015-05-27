@@ -10,7 +10,10 @@ public class CertificateImpl implements Certificate {
 
     private final X509CertificateHolder holder;
 
-    public CertificateImpl(X509CertificateHolder holder) {
+    public CertificateImpl(final X509CertificateHolder holder) {
+        if(holder == null) {
+            throw new IllegalStateException("A certificate instance cannot be backed by a null container");
+        }
         this.holder = holder;
     }
 

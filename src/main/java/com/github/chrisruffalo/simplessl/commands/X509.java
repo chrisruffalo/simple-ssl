@@ -55,6 +55,7 @@ public final class X509 {
             return Attempt.fail("The file at path '" + path.toString() + "' is not readable");
         }
 
+        // todo: gather errors
         for(final X509CertificateReader reader : this.readerChain) {
             final Attempt<Certificate> attempt = reader.read(path);
             if(attempt.successful()) {
@@ -70,6 +71,7 @@ public final class X509 {
             return Attempt.fail("No certificate data can be read from a null stream");
         }
 
+        // todo: gather errors
         for(final X509CertificateReader reader : this.readerChain) {
             final Attempt<Certificate> attempt = reader.read(stream);
             if(attempt.successful()) {
@@ -85,6 +87,7 @@ public final class X509 {
             return Attempt.fail("Certificate binary data was empty");
         }
 
+        // todo: gather errors
         for(final X509CertificateReader reader : this.readerChain) {
             final Attempt<Certificate> attempt = reader.read(bytes);
             if(attempt.successful()) {
@@ -116,7 +119,7 @@ public final class X509 {
             final Writer writer = new OutputStreamWriter(stream);
             final JcaPEMWriter pemWriter = new JcaPEMWriter(writer);
         ) {
-            pemWriter.writeObject(certificate.unwrap());
+            pemWriter.writeObject(holder);
         } catch (IOException e) {
             // todo: log error
             e.printStackTrace();
