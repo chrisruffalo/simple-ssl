@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.simplessl.impl.io;
+package com.github.chrisruffalo.simplessl.impl.keys.readers;
 
 import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
@@ -32,7 +32,7 @@ public class DERKeyReader extends BaseKeyReader {
         List<Error> errors = new LinkedList<>();
 
         // read into a byte stream
-        try(final InputStream from = new BufferedInputStream(stream);) {
+        try (final InputStream from = new BufferedInputStream(stream);) {
             // create new input stream from buffered file input stream
             ASN1StreamParser asn1Parser = new ASN1StreamParser(from);
             try {
@@ -41,15 +41,15 @@ public class DERKeyReader extends BaseKeyReader {
 
                 // ASN1 sequence data is required to build the info
                 // for the private or public key
-                if(primitive instanceof ASN1Sequence) {
+                if (primitive instanceof ASN1Sequence) {
                     // get sequence
-                    final ASN1Sequence sequence = (ASN1Sequence)primitive;
+                    final ASN1Sequence sequence = (ASN1Sequence) primitive;
 
                     // save size
                     final int seqSize = sequence.size();
 
                     // check sizes
-                    if(seqSize >= 5) { // assume "RSA" private key type
+                    if (seqSize >= 5) { // assume "RSA" private key type
                         // decide on key parser based on sequence size, assume DSA for >=5 and RSA for >= 8
                         final ASN1KeyParser asn1KeyParser = seqSize >= 8 ? new ASN1RSAKeyParser() : new ASN1DSAKeyParser();
 
@@ -57,21 +57,21 @@ public class DERKeyReader extends BaseKeyReader {
                         final Attempt<KeyPair> parsedPairOption = asn1KeyParser.parse(sequence);
 
                         // check for a return value
-                        if(!parsedPairOption.successful()) {
+                        if (!parsedPairOption.successful()) {
                             return Attempt.fail(parsedPairOption.errors(), parsedPairOption.warnings());
                         }
                         final KeyPair parsedPair = parsedPairOption.get();
 
                         // get private key and return a wrapped version
                         final PrivateKey privateKey = parsedPair.getPrivate();
-                        return (Attempt<K>)this.wrapPrivate(privateKey);
-                    } else if(seqSize > 0) { // assume public key (RSA or DSA figured by SubjectPublicKeyInfo)
+                        return (Attempt<K>) this.wrapPrivate(privateKey);
+                    } else if (seqSize > 0) { // assume public key (RSA or DSA figured by SubjectPublicKeyInfo)
                         final SubjectPublicKeyInfo info = new SubjectPublicKeyInfo(sequence);
                         final JcaPEMKeyConverter pemKeyConverter = new JcaPEMKeyConverter();
 
                         // get private key and return a wrapped one
                         final PublicKey key = pemKeyConverter.getPublicKey(info);
-                        return (Attempt<K>)this.wrapPublic(key);
+                        return (Attempt<K>) this.wrapPublic(key);
                     } else {
                         errors.add(new Error("File did not provide enough ASN.1 data for an RSA/DSA key"));
                     }

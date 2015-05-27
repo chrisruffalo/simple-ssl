@@ -1,8 +1,7 @@
-package com.github.chrisruffalo.simplessl;
+package com.github.chrisruffalo.simplessl.commands;
 
+import com.github.chrisruffalo.simplessl.SimpleSSL;
 import com.github.chrisruffalo.simplessl.api.keys.Key;
-import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAKey;
-import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +14,7 @@ import java.nio.file.Paths;
 /**
  * Created by cruffalo on 2/25/15.
  */
-public class KeysTest {
+public class RSATest {
 
     @Test
     public void test_Read_PrivateRSA_FormatPEM() throws URISyntaxException {
@@ -26,7 +25,7 @@ public class KeysTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Attempt<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = SimpleSSL.RSA.read(path);
 
         // should be present
         Assert.assertTrue(keyOption.successful());
@@ -49,7 +48,7 @@ public class KeysTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Attempt<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = SimpleSSL.RSA.read(path);
 
         // should be present
         Assert.assertTrue(keyOption.successful());
@@ -72,7 +71,7 @@ public class KeysTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Attempt<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = SimpleSSL.RSA.read(path);
 
         // should be present
         Assert.assertTrue(keyOption.successful());
@@ -96,7 +95,7 @@ public class KeysTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Attempt<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = SimpleSSL.RSA.read(path);
 
         // should be present
         Assert.assertTrue(keyOption.successful());

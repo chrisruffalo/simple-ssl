@@ -48,23 +48,30 @@ public abstract class KeyImpl implements Key {
 
     @Override
     public byte[] pem() {
-        // create byte array stream and wrap it in a writer
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        Writer destination = new OutputStreamWriter(byteArrayOutputStream);
+        // holder for bytes
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         // write (unwrapped object)
-        try(final JcaPEMWriter pemWriter = new JcaPEMWriter(destination)) {
+        try(
+            // create byte array stream and wrap it in a writer
+            final Writer destination = new OutputStreamWriter(byteArrayOutputStream);
+            final JcaPEMWriter pemWriter = new JcaPEMWriter(destination);
+        ) {
+            destination.flush();
             pemWriter.writeObject(this.unwrap());
         } catch (IOException e) {
             // todo: log error
+            e.printStackTrace();
 
             // return 0 bytes
             return new byte[0];
+
         }
 
-        final byte[] bytes = byteArrayOutputStream.toByteArray();
-
-        return bytes;
+        // get bytes
+        final byte[] pem = byteArrayOutputStream.toByteArray();
+        // and return
+        return pem;
     }
 
     @Override

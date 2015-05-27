@@ -20,6 +20,8 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.Signature;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.spec.DSAParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
@@ -144,6 +146,17 @@ public final class Provider {
         } catch (OperatorCreationException e) {
             throw new RuntimeException("Could not build content signer from provided settings with error: " + e.getMessage());
         }
+    }
+
+    public static CertificateFactory getCertificateFactory() {
+        final CertificateFactory cFactory;
+        try {
+            cFactory = CertificateFactory.getInstance("X.509");
+        } catch (CertificateException e) {
+            throw new RuntimeException("Could not get X.509 certificate factory, check that the BouncyCastle libraries are available");
+        }
+
+        return cFactory;
     }
 
 }

@@ -1,9 +1,10 @@
-package com.github.chrisruffalo.simplessl.impl.io;
+package com.github.chrisruffalo.simplessl.impl.keys.readers;
 
 import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.api.keys.PrivateKey;
 import com.github.chrisruffalo.simplessl.api.keys.PublicKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
+import com.github.chrisruffalo.simplessl.impl.SimpleReader;
 import com.github.chrisruffalo.simplessl.impl.keys.PrivateKeyImpl;
 import com.github.chrisruffalo.simplessl.impl.keys.PublicKeyImpl;
 import com.github.chrisruffalo.simplessl.impl.keys.rsa.RSAPrivateKeyImpl;
@@ -20,25 +21,7 @@ import java.security.interfaces.RSAPublicKey;
 /**
  * Created by cruffalo on 2/26/15.
  */
-public abstract class BaseKeyReader implements KeyReader {
-
-    @Override
-    public Attempt<Key> read(Path path) {
-        try(final InputStream fileInput = Files.newInputStream(path)) {
-            return this.read(fileInput);
-        } catch (IOException e) {
-            return Attempt.fail("Failed to read key from path: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public Attempt<Key> read(byte[] bytes) {
-        try(final InputStream inputStream = new ByteArrayInputStream(bytes)) {
-            return this.read(inputStream);
-        } catch (Exception ex) {
-            return Attempt.fail("Failed to read key from byte input: " + ex.getMessage(), ex);
-        }
-    }
+public abstract class BaseKeyReader<K extends Key> extends SimpleReader<K> implements KeyReader {
 
     protected Attempt<PublicKey> wrapPublic(java.security.PublicKey key) {
         PublicKey output = null;

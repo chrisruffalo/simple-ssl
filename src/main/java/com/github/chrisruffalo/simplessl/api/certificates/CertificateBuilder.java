@@ -1,6 +1,6 @@
 package com.github.chrisruffalo.simplessl.api.certificates;
 
-import com.google.common.base.Optional;
+import com.github.chrisruffalo.simplessl.api.model.Attempt;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -21,6 +21,6 @@ public interface CertificateBuilder {
 
     ExtendedCertificateBuilder withExtensions();
 
-    Optional<Certificate> build();
+    Attempt<Certificate> build();
 
 }

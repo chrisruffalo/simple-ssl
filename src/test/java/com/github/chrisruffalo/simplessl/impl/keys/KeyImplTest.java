@@ -1,12 +1,12 @@
 package com.github.chrisruffalo.simplessl.impl.keys;
 
-import com.github.chrisruffalo.simplessl.Keys;
+import com.github.chrisruffalo.simplessl.SimpleSSL;
+import com.github.chrisruffalo.simplessl.api.WriteMode;
 import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
+import com.github.chrisruffalo.simplessl.util.TempUtil;
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,21 +21,7 @@ import java.nio.file.Paths;
  */
 public class KeyImplTest {
 
-    private static Path tempDir;
-
-    @BeforeClass
-    public static void setupClass() throws IOException {
-        KeyImplTest.tempDir = Files.createTempDirectory("simple-ssl-test-");
-    }
-
-    @AfterClass
-    public static void doneWithClass() {
-        try {
-            FileUtils.deleteDirectory(KeyImplTest.tempDir.toFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final Path TEMP_DIR = TempUtil.get();
 
     @Test
     public void testPemToDer() throws URISyntaxException, IOException {
@@ -46,21 +32,28 @@ public class KeyImplTest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Attempt<Key> keyOption = Keys.read(path);
+        final Attempt<Key> keyOption = SimpleSSL.RSA.read(path);
 
         // found key
         Assert.assertTrue(keyOption.successful());
 
         // create temporary path
-        Path tempPemPath = Files.createTempFile(KeyImplTest.tempDir, "private_from_pem_", "_key.pem");
-        Path tempDerPath = Files.createTempFile(KeyImplTest.tempDir, "private_from_pem_", "_key.der");
+        Path tempPemPath = Files.createTempFile(KeyImplTest.TEMP_DIR, "private_from_pem_", "_key.pem");
+        Path tempDerPath = Files.createTempFile(KeyImplTest.TEMP_DIR, "private_from_pem_", "_key.der");
 
         // write found key to pem path and der path
         final Key key = keyOption.get();
 
+        // make sure data is present
+        final byte[] der = key.der();
+        final byte[] pem = key.pem();
+
+        Assert.assertTrue(der.length > 0);
+        Assert.assertTrue(pem.length > 0);
+
         // write keys
-        Keys.writePEM(key, tempPemPath);
-        Keys.writeDER(key, tempDerPath);
+        SimpleSSL.RSA.write(key, tempPemPath);
+        SimpleSSL.RSA.write(WriteMode.DER, key, tempDerPath);
 
         // now we want to verify that the der key is the same as the der key found in read-test/rsa/der/private_key.der
         // and that the output pem key is the same as the one read in for this test

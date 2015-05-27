@@ -207,12 +207,12 @@ you can determine if the key was found without having to sort through exceptions
 
 ### Keys <a name="keys"></a>
 
-The entry point for Keys is ```com.github.chrisruffalo.simplessl.Keys```.  This is used to read Keys, generate Keys, and otherwise manipulate keys as you would
+The entry point for Keys is ```com.github.chrisruffalo.simplessl.commands.Keys```.  This is used to read Keys, generate Keys, and otherwise manipulate keys as you would
 in OpenSSL.  The analogous commands in OpenSSL would be those that generate, modify, and inspect key files.
 
 ### Certificates <a name="certificates"></a>
 
-The entry point for Certificates is ```com.github.chrisruffalo.simplessl.Certificates```.
+The entry point for Certificates is ```com.github.chrisruffalo.simplessl.commands.Certificates```.
 
 
 <br/>

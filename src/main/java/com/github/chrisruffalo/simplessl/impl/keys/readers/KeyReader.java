@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.simplessl.impl.io;
+package com.github.chrisruffalo.simplessl.impl.keys.readers;
 
 import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;

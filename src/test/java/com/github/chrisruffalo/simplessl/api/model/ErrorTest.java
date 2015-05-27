@@ -37,7 +37,7 @@ public class ErrorTest {
     }
 
     @Test
-    public void testMessageWithThrow() {
+    public void testMessageWithThrowable() {
         Error error = new Error("error!", new IllegalStateException("illegal!"));
 
         Assert.assertNotNull(error.message());

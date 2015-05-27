@@ -1,7 +1,7 @@
 package com.github.chrisruffalo.simplessl.api.model;
 
-import com.github.chrisruffalo.simplessl.Keys;
-import com.github.chrisruffalo.simplessl.api.keys.Key;
+import com.github.chrisruffalo.simplessl.api.model.exceptions.AttemptFailureException;
+import com.github.chrisruffalo.simplessl.api.model.exceptions.RuntimeAttemptFailureException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -119,7 +119,6 @@ public class AttemptTest {
         Assert.assertEquals(4, failed.warnings().size());
     }
 
-
     @Test
     public void testFailedWithSingleErrorAndWarningList() {
         final List<Warning> warnings = new LinkedList<>();
@@ -134,5 +133,36 @@ public class AttemptTest {
         Assert.assertTrue(failed.hasWarnings());
         Assert.assertEquals(1, failed.errors().size());
         Assert.assertEquals(3, failed.warnings().size());
+    }
+
+    @Test
+    public void testFailedWithDefaultValue() {
+        final Attempt<String> stringAttempt = Attempt.succeed("success!");
+        final String value = stringAttempt.orRuntimeException();
+        Assert.assertEquals("success!", value);
+
+        final Attempt<String> failedStringAttempt = Attempt.fail();
+        final String valueFailed = failedStringAttempt.or("default value!");
+        Assert.assertEquals("default value!", valueFailed);
+    }
+
+    @Test(expected = AttemptFailureException.class)
+    public void testFailedWithCheckedException() throws AttemptFailureException {
+        final Attempt<String> stringAttempt = Attempt.succeed("success!");
+        final String value = stringAttempt.orThrow();
+        Assert.assertEquals("success!", value);
+
+        final Attempt<String> failedStringAttempt = Attempt.fail();
+        failedStringAttempt.orThrow();
+    }
+
+    @Test(expected = RuntimeAttemptFailureException.class)
+    public void testFailedWithRuntimeException() throws AttemptFailureException {
+        final Attempt<String> stringAttempt = Attempt.succeed("success!");
+        final String value = stringAttempt.orThrow();
+        Assert.assertEquals("success!", value);
+
+        final Attempt<String> failedStringAttempt = Attempt.fail();
+        failedStringAttempt.orRuntimeException();
     }
 }

@@ -8,4 +8,5 @@ import org.bouncycastle.cert.X509CertificateHolder;
 public interface Certificate {
 
     X509CertificateHolder unwrap();
+
 }

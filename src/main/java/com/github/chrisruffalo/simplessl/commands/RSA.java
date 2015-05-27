@@ -1,15 +1,14 @@
-package com.github.chrisruffalo.simplessl;
+package com.github.chrisruffalo.simplessl.commands;
 
+import com.github.chrisruffalo.simplessl.api.WriteMode;
 import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAKeyPair;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
-import com.github.chrisruffalo.simplessl.impl.io.DERKeyReader;
-import com.github.chrisruffalo.simplessl.impl.io.KeyReader;
-import com.github.chrisruffalo.simplessl.impl.io.PEMKeyReader;
+import com.github.chrisruffalo.simplessl.impl.keys.readers.DERKeyReader;
+import com.github.chrisruffalo.simplessl.impl.keys.readers.KeyReader;
+import com.github.chrisruffalo.simplessl.impl.keys.readers.PEMKeyReader;
 import com.github.chrisruffalo.simplessl.impl.keys.rsa.RSAKeyPairImpl;
 import com.google.common.io.ByteStreams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayInputStream;
@@ -19,29 +18,22 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by cruffalo on 2/25/15.
  */
-public final class Keys {
+public final class RSA {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Keys.class);
-
-    private static final List<KeyReader> READER_CHAIN = new LinkedList<>();
-
-    // initialize reader chain
-    static {
-        // try pem first
-        Keys.READER_CHAIN.add(new PEMKeyReader());
-        // them try der
-        Keys.READER_CHAIN.add(new DERKeyReader());
-    }
+    private final List<KeyReader> readerChain = new ArrayList<>(2);
 
     // since this is a utility class nobody should create it at all
-    private Keys() {
-
+    public RSA() {
+        // try pem first
+        this.readerChain.add(new PEMKeyReader());
+        // them try der
+        this.readerChain.add(new DERKeyReader());
     }
 
     /**
@@ -49,7 +41,7 @@ public final class Keys {
      *
      * @return generated key pair
      */
-    public static RSAKeyPair generateRSA() {
+    public RSAKeyPair generate() {
         return RSAKeyPairImpl.generate();
     }
 
@@ -60,7 +52,7 @@ public final class Keys {
      * @param bits size of the key in bits, should be at least 2048
      * @return generated key pair
      */
-    public static RSAKeyPair generateRSA(int bits) {
+    public RSAKeyPair generate(int bits) {
         return RSAKeyPairImpl.generate(bits);
     }
 
@@ -73,7 +65,7 @@ public final class Keys {
      * @param exponent the key's exponent
      * @return
      */
-    public static RSAKeyPair generateRSA(int bits, BigInteger exponent) {
+    public RSAKeyPair generate(int bits, BigInteger exponent) {
         return RSAKeyPairImpl.generate(bits, exponent);
     }
 
@@ -84,7 +76,7 @@ public final class Keys {
      * @param path to the key file (private or public)
      * @return optionally the Key read from the file
      */
-    public static <K extends Key> Attempt<K> read(Path path) {
+    public  <K extends Key> Attempt<K> read(Path path) {
         // a path must be provided
         if(path == null) {
             return Attempt.fail("Cannot open null path");
@@ -116,7 +108,7 @@ public final class Keys {
 
         // read file
         try(InputStream stream = Files.newInputStream(path)) {
-            return Keys.read(stream);
+            return this.read(stream);
         } catch (IOException e) {
             return Attempt.fail(String.format("IO exception while reading file at '%s', error: %s", path.toString(), e.getMessage()), e);
         }
@@ -128,13 +120,13 @@ public final class Keys {
      * @param input source byte array
      * @return optionally the Key read from the byte array
      */
-    public static <K extends Key> Attempt<K> read(byte[] input) {
+    public <K extends Key> Attempt<K> read(byte[] input) {
         // can't read null or empty bytes
         if(input == null || input.length < 1) {
             return Attempt.fail("Cannot read from empty or null byte array");
         }
 
-        for(KeyReader reader : Keys.READER_CHAIN) {
+        for(KeyReader reader : this.readerChain) {
             final Attempt<K> keyFound = reader.read(input);
             if(keyFound.successful()) {
                 return keyFound;
@@ -151,8 +143,7 @@ public final class Keys {
      * @param inputStream the source input stream for the key
      * @return optionally the Key read from the byte array
      */
-    public static <K extends Key> Attempt<K> read(InputStream inputStream) {
-
+    public <K extends Key> Attempt<K> read(InputStream inputStream) {
         // can't read null stream
         if(inputStream == null) {
             return Attempt.fail("Cannot read key from a null stream");
@@ -166,56 +157,62 @@ public final class Keys {
             return Attempt.fail("Could not read stream");
         }
 
-        return Keys.read(bytes);
+        return this.read(bytes);
     }
 
-    public static void writePEM(Key key, Path path) {
-        Keys.writePEM(key, null, path);
+    public void write(final Key key, final Path path) {
+        this.write(WriteMode.PEM, key, path);
     }
 
-    public static void writePEM(Key key, OutputStream stream) {
-        Keys.writePEM(key, null, stream);
+    public void write(final WriteMode mode, final Key key, final Path path) {
+        switch (mode) {
+            case DER:
+                RSA.write(key.der(), null, path);
+                break;
+            case PEM:
+            default:
+                RSA.write(key.pem(), null, path);
+                break;
+        }
     }
 
-    public static void writePEM(Key key, Cipher cipher, Path path) {
-        Keys.write(key.pem(), cipher, path);
+    public void write(final Key key, final OutputStream stream) {
+        this.write(WriteMode.PEM, key, stream);
     }
 
-    public static void writePEM(Key key, Cipher cipher, OutputStream stream) {
-        Keys.write(key.pem(), cipher, stream);
+    public void write(final WriteMode mode, final Key key, final OutputStream stream) {
+        switch (mode) {
+            case DER:
+                RSA.write(key.der(), null, stream);
+                break;
+            case PEM:
+            default:
+                RSA.write(key.pem(), null, stream);
+                break;
+        }
     }
 
-    public static void writeDER(Key key, Path path) {
-        Keys.writeDER(key, null, path);
-    }
-
-    public static void writeDER(Key key, OutputStream stream) {
-        Keys.writeDER(key, null, stream);
-    }
-
-    public static void writeDER(Key key, Cipher cipher, Path path) {
-        Keys.write(key.der(), cipher, path);
-    }
-
-    public static void writeDER(Key key, Cipher cipher, OutputStream stream) {
-        Keys.write(key.der(), cipher, stream);
-    }
+    // static write methods:
 
     private static void write(byte[] bytes, Cipher cipher, Path path) {
         // todo : catch errors with path / files
 
         // write
         try (final OutputStream stream = Files.newOutputStream(path)) {
-            Keys.write(bytes, cipher, stream);
+            RSA.write(bytes, cipher, stream);
         } catch (IOException e) {
-            // todo: log
+            // todo: handle errors or log
+            e.printStackTrace();
         }
     }
 
     private static void write(byte[] bytes, Cipher cipher, OutputStream stream) {
+        // todo: add cipher support
+
         try(final ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes)) {
             ByteStreams.copy(inputStream, stream);
         } catch (IOException e) {
+            // todo: handle errors or log
             e.printStackTrace();
         }
     }

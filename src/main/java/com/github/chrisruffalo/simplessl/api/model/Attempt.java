@@ -1,5 +1,7 @@
 package com.github.chrisruffalo.simplessl.api.model;
 
+import com.github.chrisruffalo.simplessl.api.model.exceptions.AttemptFailureException;
+import com.github.chrisruffalo.simplessl.api.model.exceptions.RuntimeAttemptFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +55,12 @@ public abstract class Attempt<VALUE> {
     }
 
     public abstract VALUE get();
+
+    public abstract VALUE or(final VALUE defaultValue);
+
+    public abstract VALUE orThrow() throws AttemptFailureException;
+
+    public abstract VALUE orRuntimeException() throws RuntimeAttemptFailureException;
 
     public abstract boolean hasErrors();
 
@@ -159,6 +167,21 @@ public abstract class Attempt<VALUE> {
         }
 
         @Override
+        public VALUE or(final VALUE defaultValue) {
+            return this.value;
+        }
+
+        @Override
+        public VALUE orThrow() throws AttemptFailureException {
+            return this.value;
+        }
+
+        @Override
+        public VALUE orRuntimeException() throws RuntimeAttemptFailureException {
+            return this.value;
+        }
+
+        @Override
         public boolean failed() {
             return false;
         }
@@ -212,6 +235,21 @@ public abstract class Attempt<VALUE> {
         }
 
         @Override
+        public VALUE or(final VALUE defaultValue) {
+            return defaultValue;
+        }
+
+        @Override
+        public VALUE orThrow() throws AttemptFailureException {
+            throw new AttemptFailureException(this);
+        }
+
+        @Override
+        public VALUE orRuntimeException() throws RuntimeAttemptFailureException {
+            throw new RuntimeAttemptFailureException(this);
+        }
+
+        @Override
         public boolean failed() {
             return true;
         }
@@ -243,6 +281,9 @@ public abstract class Attempt<VALUE> {
     }
 
     public static <VALUE> Attempt<VALUE> succeed(VALUE value, List<Warning> warnings) {
+        if(value == null) {
+            return new FailedAttempt<>();
+        }
         return new ValueAttempt<>(value, warnings);
     }
 
