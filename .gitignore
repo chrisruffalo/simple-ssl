@@ -16,6 +16,7 @@ hs_err_pid*
 .settings
 .classpath
 *.iml
+.idea
 
 # maven stuff
 target

@@ -11,9 +11,9 @@ import java.nio.file.Path;
 /**
  * Created by cruffalo on 5/26/15.
  */
-public abstract class SimpleReader<T> {
+public abstract class SimpleReader<I> {
 
-    public Attempt<T> read(final byte[] bytes) {
+    public <T extends I> Attempt<T> read(final byte[] bytes) {
         try(final InputStream inputStream = new ByteArrayInputStream(bytes)) {
             return this.read(inputStream);
         } catch (Exception ex) {
@@ -21,7 +21,7 @@ public abstract class SimpleReader<T> {
         }
     }
 
-    public Attempt<T> read(final Path path) {
+    public <T extends I> Attempt<T> read(final Path path) {
         try(final InputStream fileInput = Files.newInputStream(path)) {
             return this.read(fileInput);
         } catch (IOException e) {
@@ -29,5 +29,5 @@ public abstract class SimpleReader<T> {
         }
     }
 
-    public abstract Attempt<T> read(final InputStream inputStream);
+    public abstract <T extends I> Attempt<T> read(final InputStream inputStream);
 }

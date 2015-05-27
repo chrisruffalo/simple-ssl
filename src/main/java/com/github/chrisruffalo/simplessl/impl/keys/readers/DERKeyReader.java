@@ -28,7 +28,7 @@ import java.util.List;
 public class DERKeyReader extends BaseKeyReader {
 
     @Override
-    public <K extends Key> Attempt<K> read(InputStream stream) {
+    public <K extends Key> Attempt<K> read(final InputStream stream) {
         List<Error> errors = new LinkedList<>();
 
         // read into a byte stream

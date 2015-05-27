@@ -107,11 +107,14 @@ public final class RSA {
         }
 
         // read file
-        try(InputStream stream = Files.newInputStream(path)) {
-            return this.read(stream);
-        } catch (IOException e) {
-            return Attempt.fail(String.format("IO exception while reading file at '%s', error: %s", path.toString(), e.getMessage()), e);
+        for(KeyReader reader : this.readerChain) {
+            final Attempt<K> keyFound = reader.read(path);
+            if(keyFound.successful()) {
+                return keyFound;
+            }
         }
+
+        return Attempt.fail("No key found in for input file");
     }
 
     /**
@@ -157,7 +160,14 @@ public final class RSA {
             return Attempt.fail("Could not read stream");
         }
 
-        return this.read(bytes);
+        for(KeyReader reader : this.readerChain) {
+            final Attempt<K> keyFound = reader.read(inputStream);
+            if(keyFound.successful()) {
+                return keyFound;
+            }
+        }
+
+        return Attempt.fail("No key data found in input stream");
     }
 
     public void write(final Key key, final Path path) {

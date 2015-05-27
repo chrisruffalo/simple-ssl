@@ -21,7 +21,7 @@ import java.security.PublicKey;
 public class PEMKeyReader extends BaseKeyReader {
 
     @Override
-    public <K extends Key> Attempt<K> read(InputStream stream) {
+    public <K extends Key> Attempt<K> read(final InputStream stream) {
         // create source reader from input stream
         try(final Reader sourceReader = new InputStreamReader(stream)) {
             // create pem reader

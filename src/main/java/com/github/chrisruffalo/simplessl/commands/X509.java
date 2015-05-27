@@ -55,11 +55,14 @@ public final class X509 {
             return Attempt.fail("The file at path '" + path.toString() + "' is not readable");
         }
 
-        try (final InputStream stream = Files.newInputStream(path);) {
-            return this.read(stream);
-        } catch (IOException e) {
-            return Attempt.fail(new Error("Error while reading file at path: " + path.toString(), e));
+        for(final X509CertificateReader reader : this.readerChain) {
+            final Attempt<Certificate> attempt = reader.read(path);
+            if(attempt.successful()) {
+                return attempt;
+            }
         }
+
+        return Attempt.fail("Could not read certificate data from path: " + path.toString());
     }
 
     public Attempt<Certificate> read(final InputStream stream) {
@@ -67,29 +70,29 @@ public final class X509 {
             return Attempt.fail("No certificate data can be read from a null stream");
         }
 
-        try (
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ){
-            ByteStreams.copy(stream, outputStream);
-            return this.read(outputStream.toByteArray());
-        } catch (IOException e) {
-            return Attempt.fail(new Error("Error while reading X.509 certificate stream: " + e.getMessage(), e));
+        for(final X509CertificateReader reader : this.readerChain) {
+            final Attempt<Certificate> attempt = reader.read(stream);
+            if(attempt.successful()) {
+                return attempt;
+            }
         }
+
+        return Attempt.fail("Could not read certificate data from input stream");
     }
 
     public Attempt<Certificate> read(final byte[] bytes) {
         if(bytes == null || bytes.length < 1) {
-            return Attempt.fail("Certificate data stream was empty");
+            return Attempt.fail("Certificate binary data was empty");
         }
 
-        // read certificate from byte information
-        try {
-            final X509CertificateHolder holder = new X509CertificateHolder(bytes);
-            final Certificate certificate = new CertificateImpl(holder);
-            return Attempt.succeed(certificate);
-        } catch (IOException e) {
-            return Attempt.fail(new Error("Error while reading X.509 certificate: " + e.getMessage(), e));
+        for(final X509CertificateReader reader : this.readerChain) {
+            final Attempt<Certificate> attempt = reader.read(bytes);
+            if(attempt.successful()) {
+                return attempt;
+            }
         }
+
+        return Attempt.fail("Could not read certificate data from binary data");
     }
 
     public void write(final Certificate certificate, final Path path) {

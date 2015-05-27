@@ -21,7 +21,7 @@ import java.security.interfaces.RSAPublicKey;
 /**
  * Created by cruffalo on 2/26/15.
  */
-public abstract class BaseKeyReader<K extends Key> extends SimpleReader<K> implements KeyReader {
+public abstract class BaseKeyReader extends SimpleReader<Key> implements KeyReader {
 
     protected Attempt<PublicKey> wrapPublic(java.security.PublicKey key) {
         PublicKey output = null;

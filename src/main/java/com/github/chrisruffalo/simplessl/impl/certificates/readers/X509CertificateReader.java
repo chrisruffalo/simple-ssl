@@ -12,10 +12,10 @@ import java.nio.file.Path;
  */
 public interface X509CertificateReader {
 
-    Attempt<Certificate> read(Path path);
+    <T extends Certificate> Attempt<T> read(final Path path);
 
-    Attempt<Certificate> read(InputStream stream);
+    <T extends Certificate> Attempt<T> read(final InputStream stream);
 
-    Attempt<Certificate> read(byte[] bytes);
+    <T extends Certificate> Attempt<T> read(final byte[] bytes);
 
 }

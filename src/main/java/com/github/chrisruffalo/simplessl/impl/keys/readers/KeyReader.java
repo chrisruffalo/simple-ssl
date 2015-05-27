@@ -11,10 +11,10 @@ import java.nio.file.Path;
  */
 public interface KeyReader {
 
-    <K extends Key> Attempt<K> read(Path path);
+    <K extends Key> Attempt<K> read(final Path path);
 
-    <K extends Key> Attempt<K> read(InputStream stream);
+    <K extends Key> Attempt<K> read(final InputStream stream);
 
-    <K extends Key> Attempt<K> read(byte[] bytes);
+    <K extends Key> Attempt<K> read(final byte[] bytes);
 
 }
