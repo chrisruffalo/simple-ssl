@@ -1,8 +1,8 @@
 package com.github.chrisruffalo.simplessl.commands;
 
 import com.github.chrisruffalo.simplessl.SimpleSSL;
-import com.github.chrisruffalo.simplessl.api.certificates.Certificate;
-import com.github.chrisruffalo.simplessl.api.certificates.CertificateBuilder;
+import com.github.chrisruffalo.simplessl.api.x509.SimpleX509Certificate;
+import com.github.chrisruffalo.simplessl.api.x509.SimpleX509CertificateBuilder;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAKeyPair;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAPrivateKey;
 import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAPublicKey;
@@ -27,18 +27,18 @@ public class X509Test {
         final SimpleRSAPrivateKey privateKey = pair.privateKey();
 
         // create v1 cert
-        final CertificateBuilder builder = SimpleSSL.X509().builder();
+        final SimpleX509CertificateBuilder builder = SimpleSSL.X509().builder();
         builder.setPublicKey(publicKey)
                .setPrivateKey(privateKey)
                ;
         // build cert
-        final Attempt<Certificate> certAttempt = builder.build();
+        final Attempt<SimpleX509Certificate> certAttempt = builder.build();
 
         // check cert was returned
         Assert.assertFalse(certAttempt.failed());
 
         // get cert
-        final Certificate certificate = certAttempt.get();
+        final SimpleX509Certificate certificate = certAttempt.get();
 
         // write and read cert
         final Path tempDir = TempUtil.get();
@@ -46,8 +46,8 @@ public class X509Test {
         SimpleSSL.X509().write(certificate, certOUt);
 
         // read cert
-        final Attempt<Certificate> readAttempt = SimpleSSL.X509().read(certOUt);
-        final Certificate readCert = readAttempt.orRuntimeException();
+        final Attempt<SimpleX509Certificate> readAttempt = SimpleSSL.X509().read(certOUt);
+        final SimpleX509Certificate readCert = readAttempt.orRuntimeException();
     }
 
 }

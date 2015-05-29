@@ -1,9 +1,9 @@
-package com.github.chrisruffalo.simplessl.impl.certificates.readers;
+package com.github.chrisruffalo.simplessl.impl.x509.readers;
 
-import com.github.chrisruffalo.simplessl.api.certificates.Certificate;
+import com.github.chrisruffalo.simplessl.api.x509.SimpleX509Certificate;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import com.github.chrisruffalo.simplessl.impl.SimpleReader;
-import com.github.chrisruffalo.simplessl.impl.certificates.CertificateImpl;
+import com.github.chrisruffalo.simplessl.impl.x509.SimpleX509CertificateImpl;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.openssl.PEMParser;
 
@@ -15,10 +15,10 @@ import java.io.Reader;
 /**
  * Created by cruffalo on 5/26/15.
  */
-public class X509PEMCertificateReader extends SimpleReader<Certificate> implements X509CertificateReader {
+public class X509PEMCertificateReader extends SimpleReader<SimpleX509Certificate> implements X509CertificateReader {
 
     @Override
-    public <T extends Certificate> Attempt<T> read(final InputStream inputStream) {
+    public <T extends SimpleX509Certificate> Attempt<T> read(final InputStream inputStream) {
 
         // create source reader from input stream
         try(final Reader sourceReader = new InputStreamReader(inputStream)) {
@@ -29,7 +29,7 @@ public class X509PEMCertificateReader extends SimpleReader<Certificate> implemen
                 final Object decoded = parser.readObject();
                 if(decoded instanceof X509CertificateHolder) {
                     final X509CertificateHolder holder = (X509CertificateHolder)decoded;
-                    return Attempt.succeed((T)new CertificateImpl(holder));
+                    return Attempt.succeed((T)new SimpleX509CertificateImpl(holder));
                 }
             } catch (IOException e) {
                 return Attempt.fail("Failed to open object as PEM: " + e.getMessage());

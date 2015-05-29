@@ -1,12 +1,12 @@
 package com.github.chrisruffalo.simplessl.commands;
 
-import com.github.chrisruffalo.simplessl.api.certificates.Certificate;
-import com.github.chrisruffalo.simplessl.api.certificates.CertificateBuilder;
+import com.github.chrisruffalo.simplessl.api.x509.SimpleX509Certificate;
+import com.github.chrisruffalo.simplessl.api.x509.SimpleX509CertificateBuilder;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
-import com.github.chrisruffalo.simplessl.impl.certificates.CertificateBuilderImpl;
-import com.github.chrisruffalo.simplessl.impl.certificates.readers.X509CertificateReader;
-import com.github.chrisruffalo.simplessl.impl.certificates.readers.X509DERCertificateReader;
-import com.github.chrisruffalo.simplessl.impl.certificates.readers.X509PEMCertificateReader;
+import com.github.chrisruffalo.simplessl.impl.x509.SimpleX509CertificateBuilderImpl;
+import com.github.chrisruffalo.simplessl.impl.x509.readers.X509CertificateReader;
+import com.github.chrisruffalo.simplessl.impl.x509.readers.X509DERCertificateReader;
+import com.github.chrisruffalo.simplessl.impl.x509.readers.X509PEMCertificateReader;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
@@ -34,11 +34,11 @@ public final class X509 {
         this.readerChain.add(new X509DERCertificateReader());
     }
 
-    public CertificateBuilder builder() {
-        return new CertificateBuilderImpl();
+    public SimpleX509CertificateBuilder builder() {
+        return new SimpleX509CertificateBuilderImpl();
     }
 
-    public Attempt<Certificate> read(final Path path) {
+    public Attempt<SimpleX509Certificate> read(final Path path) {
         if(path == null) {
             return Attempt.fail("A non-null path to a valid x509 certificate must be provided");
         }
@@ -53,7 +53,7 @@ public final class X509 {
 
         // todo: gather errors
         for(final X509CertificateReader reader : this.readerChain) {
-            final Attempt<Certificate> attempt = reader.read(path);
+            final Attempt<SimpleX509Certificate> attempt = reader.read(path);
             if(attempt.successful()) {
                 return attempt;
             }
@@ -62,14 +62,14 @@ public final class X509 {
         return Attempt.fail("Could not read certificate data from path: " + path.toString());
     }
 
-    public Attempt<Certificate> read(final InputStream stream) {
+    public Attempt<SimpleX509Certificate> read(final InputStream stream) {
         if(stream == null) {
             return Attempt.fail("No certificate data can be read from a null stream");
         }
 
         // todo: gather errors
         for(final X509CertificateReader reader : this.readerChain) {
-            final Attempt<Certificate> attempt = reader.read(stream);
+            final Attempt<SimpleX509Certificate> attempt = reader.read(stream);
             if(attempt.successful()) {
                 return attempt;
             }
@@ -78,14 +78,14 @@ public final class X509 {
         return Attempt.fail("Could not read certificate data from input stream");
     }
 
-    public Attempt<Certificate> read(final byte[] bytes) {
+    public Attempt<SimpleX509Certificate> read(final byte[] bytes) {
         if(bytes == null || bytes.length < 1) {
             return Attempt.fail("Certificate binary data was empty");
         }
 
         // todo: gather errors
         for(final X509CertificateReader reader : this.readerChain) {
-            final Attempt<Certificate> attempt = reader.read(bytes);
+            final Attempt<SimpleX509Certificate> attempt = reader.read(bytes);
             if(attempt.successful()) {
                 return attempt;
             }
@@ -94,7 +94,7 @@ public final class X509 {
         return Attempt.fail("Could not read certificate data from binary data");
     }
 
-    public void write(final Certificate certificate, final Path path) {
+    public void write(final SimpleX509Certificate certificate, final Path path) {
         // todo: catch/check errors with path/files
 
         // write cert
@@ -106,7 +106,7 @@ public final class X509 {
         }
     }
 
-    public void write(final Certificate certificate, final OutputStream stream) {
+    public void write(final SimpleX509Certificate certificate, final OutputStream stream) {
         // unwrap cert
         final X509CertificateHolder holder = certificate.unwrap();
 

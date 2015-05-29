@@ -1,4 +1,6 @@
-package com.github.chrisruffalo.simplessl.api.certificates.constraints;
+package com.github.chrisruffalo.simplessl.api.x509.constraints;
+
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 /**
  * A constraint parent (standard, key usage, critical...)
@@ -19,5 +21,12 @@ public interface X509Constraint<T> {
      * @return
      */
     String oid();
+
+    /**
+     * An ASN1 instance ID for compatibility with BCE
+     *
+     * @return
+     */
+    ASN1ObjectIdentifier ASN1ID();
 
 }
