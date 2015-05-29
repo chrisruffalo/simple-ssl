@@ -1,17 +1,17 @@
 package com.github.chrisruffalo.simplessl.impl.keys;
 
-import com.github.chrisruffalo.simplessl.api.keys.PrivateKey;
-import com.github.chrisruffalo.simplessl.api.keys.PublicKey;
+import com.github.chrisruffalo.simplessl.api.keys.SimplePrivateKey;
+import com.github.chrisruffalo.simplessl.api.keys.SimplePublicKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 
 /**
  * Created by cruffalo on 2/25/15.
  */
-public class PrivateKeyImpl<K extends PublicKey> extends KeyImpl implements PrivateKey<K> {
+public class SimplePrivateKeyImpl<K extends SimplePublicKey> extends SimpleKeyImpl implements SimplePrivateKey<K> {
 
     private final java.security.PrivateKey wrapped;
 
-    public PrivateKeyImpl(java.security.PrivateKey key) {
+    public SimplePrivateKeyImpl(java.security.PrivateKey key) {
         this.wrapped = key;
     }
 

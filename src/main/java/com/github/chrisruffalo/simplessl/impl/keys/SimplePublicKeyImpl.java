@@ -1,17 +1,17 @@
 package com.github.chrisruffalo.simplessl.impl.keys;
 
-import com.github.chrisruffalo.simplessl.api.keys.PublicKey;
+import com.github.chrisruffalo.simplessl.api.keys.SimplePublicKey;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 
 /**
  * Created by cruffalo on 2/25/15.
  */
-public class PublicKeyImpl extends KeyImpl implements PublicKey {
+public class SimplePublicKeyImpl extends SimpleKeyImpl implements SimplePublicKey {
 
     private final java.security.PublicKey wrapped;
 
-    public PublicKeyImpl(java.security.PublicKey key) {
+    public SimplePublicKeyImpl(java.security.PublicKey key) {
         this.wrapped = key;
     }
 

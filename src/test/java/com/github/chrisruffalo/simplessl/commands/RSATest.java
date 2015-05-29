@@ -1,7 +1,7 @@
 package com.github.chrisruffalo.simplessl.commands;
 
 import com.github.chrisruffalo.simplessl.SimpleSSL;
-import com.github.chrisruffalo.simplessl.api.keys.Key;
+import com.github.chrisruffalo.simplessl.api.keys.SimpleKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,13 +25,13 @@ public class RSATest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Attempt<Key> keyOption = SimpleSSL.RSA.read(path);
+        final Attempt<SimpleKey> keyOption = SimpleSSL.RSA().read(path);
 
         // should be present
         Assert.assertTrue(keyOption.successful());
 
         // get key
-        Key key = keyOption.get();
+        SimpleKey key = keyOption.get();
         Assert.assertTrue(key.isPrivate());
 
         // unwrap
@@ -48,13 +48,13 @@ public class RSATest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Attempt<Key> keyOption = SimpleSSL.RSA.read(path);
+        final Attempt<SimpleKey> keyOption = SimpleSSL.RSA().read(path);
 
         // should be present
         Assert.assertTrue(keyOption.successful());
 
         // get key
-        Key key = keyOption.get();
+        SimpleKey key = keyOption.get();
         Assert.assertFalse(key.isPrivate());
 
         // unwrap
@@ -71,13 +71,13 @@ public class RSATest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Attempt<Key> keyOption = SimpleSSL.RSA.read(path);
+        final Attempt<SimpleKey> keyOption = SimpleSSL.RSA().read(path);
 
         // should be present
         Assert.assertTrue(keyOption.successful());
 
         // get key
-        Key key = keyOption.get();
+        SimpleKey key = keyOption.get();
         Assert.assertTrue(key.isPrivate());
 
         // unwrap
@@ -95,13 +95,13 @@ public class RSATest {
         final Path path = Paths.get(keyURL.toURI());
 
         // read
-        final Attempt<Key> keyOption = SimpleSSL.RSA.read(path);
+        final Attempt<SimpleKey> keyOption = SimpleSSL.RSA().read(path);
 
         // should be present
         Assert.assertTrue(keyOption.successful());
 
         // get key
-        Key key = keyOption.get();
+        SimpleKey key = keyOption.get();
         Assert.assertFalse(key.isPrivate());
 
         // unwrap

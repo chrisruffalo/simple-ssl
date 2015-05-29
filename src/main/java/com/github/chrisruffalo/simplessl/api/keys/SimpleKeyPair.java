@@ -3,11 +3,11 @@ package com.github.chrisruffalo.simplessl.api.keys;
 /**
  * Created by cruffalo on 2/24/15.
  */
-public interface KeyPair {
+public interface SimpleKeyPair {
 
-    PrivateKey privateKey();
+    SimplePrivateKey privateKey();
 
-    PublicKey publicKey();
+    SimplePublicKey publicKey();
 
     java.security.KeyPair unwrap();
 

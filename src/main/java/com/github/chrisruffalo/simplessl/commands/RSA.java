@@ -1,13 +1,13 @@
 package com.github.chrisruffalo.simplessl.commands;
 
 import com.github.chrisruffalo.simplessl.api.WriteMode;
-import com.github.chrisruffalo.simplessl.api.keys.Key;
-import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAKeyPair;
+import com.github.chrisruffalo.simplessl.api.keys.SimpleKey;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAKeyPair;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import com.github.chrisruffalo.simplessl.impl.keys.readers.DERKeyReader;
 import com.github.chrisruffalo.simplessl.impl.keys.readers.KeyReader;
 import com.github.chrisruffalo.simplessl.impl.keys.readers.PEMKeyReader;
-import com.github.chrisruffalo.simplessl.impl.keys.rsa.RSAKeyPairImpl;
+import com.github.chrisruffalo.simplessl.impl.keys.rsa.SimpleRSAKeyPairImpl;
 import com.google.common.io.ByteStreams;
 
 import javax.crypto.Cipher;
@@ -41,8 +41,8 @@ public final class RSA {
      *
      * @return generated key pair
      */
-    public RSAKeyPair generate() {
-        return RSAKeyPairImpl.generate();
+    public SimpleRSAKeyPair generate() {
+        return SimpleRSAKeyPairImpl.generate();
     }
 
     /**
@@ -52,8 +52,8 @@ public final class RSA {
      * @param bits size of the key in bits, should be at least 2048
      * @return generated key pair
      */
-    public RSAKeyPair generate(int bits) {
-        return RSAKeyPairImpl.generate(bits);
+    public SimpleRSAKeyPair generate(int bits) {
+        return SimpleRSAKeyPairImpl.generate(bits);
     }
 
     /**
@@ -65,8 +65,8 @@ public final class RSA {
      * @param exponent the key's exponent
      * @return
      */
-    public RSAKeyPair generate(int bits, BigInteger exponent) {
-        return RSAKeyPairImpl.generate(bits, exponent);
+    public SimpleRSAKeyPair generate(int bits, BigInteger exponent) {
+        return SimpleRSAKeyPairImpl.generate(bits, exponent);
     }
 
     /**
@@ -76,7 +76,7 @@ public final class RSA {
      * @param path to the key file (private or public)
      * @return optionally the Key read from the file
      */
-    public  <K extends Key> Attempt<K> read(Path path) {
+    public  <K extends SimpleKey> Attempt<K> read(Path path) {
         // a path must be provided
         if(path == null) {
             return Attempt.fail("Cannot open null path");
@@ -123,7 +123,7 @@ public final class RSA {
      * @param input source byte array
      * @return optionally the Key read from the byte array
      */
-    public <K extends Key> Attempt<K> read(byte[] input) {
+    public <K extends SimpleKey> Attempt<K> read(byte[] input) {
         // can't read null or empty bytes
         if(input == null || input.length < 1) {
             return Attempt.fail("Cannot read from empty or null byte array");
@@ -146,7 +146,7 @@ public final class RSA {
      * @param inputStream the source input stream for the key
      * @return optionally the Key read from the byte array
      */
-    public <K extends Key> Attempt<K> read(InputStream inputStream) {
+    public <K extends SimpleKey> Attempt<K> read(InputStream inputStream) {
         // can't read null stream
         if(inputStream == null) {
             return Attempt.fail("Cannot read key from a null stream");
@@ -170,11 +170,11 @@ public final class RSA {
         return Attempt.fail("No key data found in input stream");
     }
 
-    public void write(final Key key, final Path path) {
+    public void write(final SimpleKey key, final Path path) {
         this.write(WriteMode.PEM, key, path);
     }
 
-    public void write(final WriteMode mode, final Key key, final Path path) {
+    public void write(final WriteMode mode, final SimpleKey key, final Path path) {
         switch (mode) {
             case DER:
                 RSA.write(key.der(), null, path);
@@ -186,11 +186,11 @@ public final class RSA {
         }
     }
 
-    public void write(final Key key, final OutputStream stream) {
+    public void write(final SimpleKey key, final OutputStream stream) {
         this.write(WriteMode.PEM, key, stream);
     }
 
-    public void write(final WriteMode mode, final Key key, final OutputStream stream) {
+    public void write(final WriteMode mode, final SimpleKey key, final OutputStream stream) {
         switch (mode) {
             case DER:
                 RSA.write(key.der(), null, stream);

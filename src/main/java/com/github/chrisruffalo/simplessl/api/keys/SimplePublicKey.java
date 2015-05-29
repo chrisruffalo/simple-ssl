@@ -5,7 +5,7 @@ import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 /**
  * Created by cruffalo on 2/25/15.
  */
-public interface PublicKey extends Key, java.security.PublicKey {
+public interface SimplePublicKey extends SimpleKey, java.security.PublicKey {
 
     SubjectPublicKeyInfo info();
 

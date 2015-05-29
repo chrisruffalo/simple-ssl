@@ -1,6 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.keys.readers;
 
-import com.github.chrisruffalo.simplessl.api.keys.Key;
+import com.github.chrisruffalo.simplessl.api.keys.SimpleKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import com.github.chrisruffalo.simplessl.api.model.Error;
 import com.github.chrisruffalo.simplessl.impl.asn1.ASN1DSAKeyParser;
@@ -28,7 +28,7 @@ import java.util.List;
 public class DERKeyReader extends BaseKeyReader {
 
     @Override
-    public <K extends Key> Attempt<K> read(final InputStream stream) {
+    public <K extends SimpleKey> Attempt<K> read(final InputStream stream) {
         List<Error> errors = new LinkedList<>();
 
         // read into a byte stream

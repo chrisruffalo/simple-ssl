@@ -18,8 +18,8 @@ import com.github.chrisruffalo.simplessl.commands.X509;
  */
 public final class SimpleSSL {
 
-    public static final X509 X509 = new X509();
-    public static final RSA RSA = new RSA();
+    private static final X509 X509 = new X509();
+    private static final RSA RSA = new RSA();
 
     // empty static block
     static {
@@ -31,4 +31,11 @@ public final class SimpleSSL {
 
     }
 
+    public static RSA RSA() {
+        return SimpleSSL.RSA;
+    }
+
+    public static X509 X509() {
+        return SimpleSSL.X509;
+    }
 }

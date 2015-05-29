@@ -6,9 +6,10 @@ import com.github.chrisruffalo.simplessl.api.certificates.CertificateBuilder;
 import com.github.chrisruffalo.simplessl.api.certificates.ExtendedCertificateBuilder;
 import com.github.chrisruffalo.simplessl.api.certificates.constraints.CertificateBasicConstraint;
 import com.github.chrisruffalo.simplessl.api.certificates.constraints.X509Constraint;
+import com.github.chrisruffalo.simplessl.api.keys.SimplePublicKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import com.github.chrisruffalo.simplessl.engine.Provider;
-import com.github.chrisruffalo.simplessl.impl.keys.PublicKeyImpl;
+import com.github.chrisruffalo.simplessl.impl.keys.SimplePublicKeyImpl;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -154,12 +155,12 @@ public class CertificateBuilderImpl implements CertificateBuilder, ExtendedCerti
 
         // public key (unwrap if possible, just for lower-level support, even though the decorator should work)
         PublicKey pKey = this.publicKey;
-        if(pKey instanceof com.github.chrisruffalo.simplessl.api.keys.PublicKey) {
-            pKey = ((com.github.chrisruffalo.simplessl.api.keys.PublicKey) pKey).unwrap();
+        if(pKey instanceof SimplePublicKey) {
+            pKey = ((SimplePublicKey) pKey).unwrap();
         }
 
         // public key info, the public key info for the owner of the cert
-        final SubjectPublicKeyInfo info = new PublicKeyImpl(pKey).info();
+        final SubjectPublicKeyInfo info = new SimplePublicKeyImpl(pKey).info();
 
         // create serial and generate random if none has been specified
         BigInteger serial = BigInteger.valueOf(this.serial);

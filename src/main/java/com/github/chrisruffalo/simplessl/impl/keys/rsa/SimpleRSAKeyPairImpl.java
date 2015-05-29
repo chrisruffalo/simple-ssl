@@ -1,8 +1,10 @@
 package com.github.chrisruffalo.simplessl.impl.keys.rsa;
 
-import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAKeyPair;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAKeyPair;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAPrivateKey;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAPublicKey;
 import com.github.chrisruffalo.simplessl.engine.Provider;
-import com.github.chrisruffalo.simplessl.impl.keys.KeyPairImpl;
+import com.github.chrisruffalo.simplessl.impl.keys.SimpleKeyPairImpl;
 
 import java.math.BigInteger;
 import java.security.KeyPairGenerator;
@@ -16,7 +18,7 @@ import java.security.spec.RSAKeyGenParameterSpec;
 /**
  * Created by cruffalo on 2/24/15.
  */
-public final class RSAKeyPairImpl extends KeyPairImpl implements RSAKeyPair {
+public final class SimpleRSAKeyPairImpl extends SimpleKeyPairImpl implements SimpleRSAKeyPair {
 
     // decent bitsize by default
     private static final int DEFAULT_BITSIZE = 2048;
@@ -25,36 +27,36 @@ public final class RSAKeyPairImpl extends KeyPairImpl implements RSAKeyPair {
     private static final BigInteger DEFAULT_EXPONENT = RSAKeyGenParameterSpec.F4;
 
     // can't construct
-    private RSAKeyPairImpl(RSAPublicKey rsaPublicKey, RSAPrivateKey rsaPrivateKey) {
-        super(new RSAPublicKeyImpl(rsaPublicKey), new RSAPrivateKeyImpl(rsaPrivateKey));
+    private SimpleRSAKeyPairImpl(RSAPublicKey rsaPublicKey, RSAPrivateKey rsaPrivateKey) {
+        super(new SimpleRSAPublicKeyImpl(rsaPublicKey), new SimpleRSAPrivateKeyImpl(rsaPrivateKey));
     }
 
     @Override
-    public com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey privateKey() {
-        return (com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey) super.privateKey();
+    public SimpleRSAPrivateKey privateKey() {
+        return (SimpleRSAPrivateKey) super.privateKey();
     }
 
     @Override
-    public com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey publicKey() {
-        return (com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey) super.publicKey();
+    public SimpleRSAPublicKey publicKey() {
+        return (SimpleRSAPublicKey) super.publicKey();
     }
 
     // generators ======================
 
-    public static RSAKeyPair generate() {
-        return RSAKeyPairImpl.generate(RSAKeyPairImpl.DEFAULT_BITSIZE, RSAKeyPairImpl.DEFAULT_EXPONENT);
+    public static SimpleRSAKeyPair generate() {
+        return SimpleRSAKeyPairImpl.generate(SimpleRSAKeyPairImpl.DEFAULT_BITSIZE, SimpleRSAKeyPairImpl.DEFAULT_EXPONENT);
     }
 
-    public static RSAKeyPair generate(int bits) {
-        return RSAKeyPairImpl.generate(bits, RSAKeyPairImpl.DEFAULT_EXPONENT);
+    public static SimpleRSAKeyPair generate(int bits) {
+        return SimpleRSAKeyPairImpl.generate(bits, SimpleRSAKeyPairImpl.DEFAULT_EXPONENT);
     }
 
-    public static RSAKeyPair generate(int bits, long exponent) {
+    public static SimpleRSAKeyPair generate(int bits, long exponent) {
         final BigInteger bigE = BigInteger.valueOf(exponent);
-        return RSAKeyPairImpl.generate(bits, bigE);
+        return SimpleRSAKeyPairImpl.generate(bits, bigE);
     }
 
-    public static RSAKeyPair generate(int bits, BigInteger exponent) {
+    public static SimpleRSAKeyPair generate(int bits, BigInteger exponent) {
 
         // get generator
         final KeyPairGenerator generator = Provider.getRSAKeyPairGenerator(bits, exponent);
@@ -73,7 +75,7 @@ public final class RSAKeyPairImpl extends KeyPairImpl implements RSAKeyPair {
             final RSAPrivateKey priImpl = (RSAPrivateKey)privateKey;
 
             // return newly created impl
-            return new RSAKeyPairImpl(pubImpl, priImpl);
+            return new SimpleRSAKeyPairImpl(pubImpl, priImpl);
         }
 
         // something has gone wrong!

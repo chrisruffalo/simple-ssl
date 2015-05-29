@@ -3,9 +3,9 @@ package com.github.chrisruffalo.simplessl.impl.certificates;
 import com.github.chrisruffalo.simplessl.SimpleSSL;
 import com.github.chrisruffalo.simplessl.api.certificates.Certificate;
 import com.github.chrisruffalo.simplessl.api.certificates.CertificateBuilder;
-import com.github.chrisruffalo.simplessl.api.keys.KeyPair;
-import com.github.chrisruffalo.simplessl.api.keys.PrivateKey;
-import com.github.chrisruffalo.simplessl.api.keys.PublicKey;
+import com.github.chrisruffalo.simplessl.api.keys.SimpleKeyPair;
+import com.github.chrisruffalo.simplessl.api.keys.SimplePrivateKey;
+import com.github.chrisruffalo.simplessl.api.keys.SimplePublicKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import org.junit.Test;
 
@@ -34,11 +34,11 @@ public class CertificateBuilderImplTest {
         final Path publicKeyPath = Paths.get(publicKeyURL.toURI());
 
         // read keys
-        Attempt<PrivateKey<PublicKey>> privateKey = SimpleSSL.RSA.read(privateKeyPath);
-        Attempt<PublicKey> publicKey = SimpleSSL.RSA.read(publicKeyPath);
+        Attempt<SimplePrivateKey<SimplePublicKey>> privateKey = SimpleSSL.RSA().read(privateKeyPath);
+        Attempt<SimplePublicKey> publicKey = SimpleSSL.RSA().read(publicKeyPath);
 
         // create certificate builder
-        final CertificateBuilder builder = SimpleSSL.X509.builder();
+        final CertificateBuilder builder = SimpleSSL.X509().builder();
 
         builder.setPrivateKey(privateKey.get())
                 .setPublicKey(publicKey.get())
@@ -50,10 +50,10 @@ public class CertificateBuilderImplTest {
     @Test
     public void testDefaultV1FromGenerated() {
         // generate keys
-        KeyPair pair = SimpleSSL.RSA.generate();
+        SimpleKeyPair pair = SimpleSSL.RSA().generate();
 
         // create certificate builder
-        final CertificateBuilder builder = SimpleSSL.X509.builder();
+        final CertificateBuilder builder = SimpleSSL.X509().builder();
 
         builder.setPrivateKey(pair.privateKey())
                 .setPublicKey(pair.publicKey())

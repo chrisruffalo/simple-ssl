@@ -1,7 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.certificates.readers;
 
 import com.github.chrisruffalo.simplessl.api.certificates.Certificate;
-import com.github.chrisruffalo.simplessl.api.keys.Key;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 
 import java.io.InputStream;

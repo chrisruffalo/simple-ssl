@@ -1,7 +1,7 @@
 package com.github.chrisruffalo.simplessl.impl.keys.rsa;
 
-import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey;
-import com.github.chrisruffalo.simplessl.impl.keys.PublicKeyImpl;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAPublicKey;
+import com.github.chrisruffalo.simplessl.impl.keys.SimplePublicKeyImpl;
 
 import java.math.BigInteger;
 import java.security.Key;
@@ -10,9 +10,9 @@ import java.security.PublicKey;
 /**
  * Created by cruffalo on 3/3/15.
  */
-public class RSAPublicKeyImpl extends PublicKeyImpl implements RSAPublicKey {
+public class SimpleRSAPublicKeyImpl extends SimplePublicKeyImpl implements SimpleRSAPublicKey {
 
-    public RSAPublicKeyImpl(java.security.interfaces.RSAPublicKey key) {
+    public SimpleRSAPublicKeyImpl(java.security.interfaces.RSAPublicKey key) {
         super(key);
     }
 

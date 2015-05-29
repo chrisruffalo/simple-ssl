@@ -1,6 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.keys.readers;
 
-import com.github.chrisruffalo.simplessl.api.keys.Key;
+import com.github.chrisruffalo.simplessl.api.keys.SimpleKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.openssl.PEMKeyPair;
@@ -21,7 +21,7 @@ import java.security.PublicKey;
 public class PEMKeyReader extends BaseKeyReader {
 
     @Override
-    public <K extends Key> Attempt<K> read(final InputStream stream) {
+    public <K extends SimpleKey> Attempt<K> read(final InputStream stream) {
         // create source reader from input stream
         try(final Reader sourceReader = new InputStreamReader(stream)) {
             // create pem reader

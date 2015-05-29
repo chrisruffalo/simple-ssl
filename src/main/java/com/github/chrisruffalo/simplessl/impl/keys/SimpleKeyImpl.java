@@ -1,6 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.keys;
 
-import com.github.chrisruffalo.simplessl.api.keys.Key;
+import com.github.chrisruffalo.simplessl.api.keys.SimpleKey;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.util.encoders.Base64;
 
@@ -12,7 +12,7 @@ import java.io.Writer;
 /**
  * Created by cruffalo on 2/25/15.
  */
-public abstract class KeyImpl implements Key {
+public abstract class SimpleKeyImpl implements SimpleKey {
 
     @Override
     public byte[] der() {

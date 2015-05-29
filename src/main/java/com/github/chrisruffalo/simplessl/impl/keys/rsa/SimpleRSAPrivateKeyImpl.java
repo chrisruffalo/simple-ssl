@@ -1,11 +1,11 @@
 package com.github.chrisruffalo.simplessl.impl.keys.rsa;
 
 import com.github.chrisruffalo.simplessl.api.SupportedKeyType;
-import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPrivateKey;
-import com.github.chrisruffalo.simplessl.api.keys.rsa.RSAPublicKey;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAPrivateKey;
+import com.github.chrisruffalo.simplessl.api.keys.rsa.SimpleRSAPublicKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 import com.github.chrisruffalo.simplessl.engine.Provider;
-import com.github.chrisruffalo.simplessl.impl.keys.PrivateKeyImpl;
+import com.github.chrisruffalo.simplessl.impl.keys.SimplePrivateKeyImpl;
 
 import java.math.BigInteger;
 import java.security.Key;
@@ -18,14 +18,14 @@ import java.security.spec.RSAPublicKeySpec;
 /**
  * Created by cruffalo on 3/3/15.
  */
-public class RSAPrivateKeyImpl extends PrivateKeyImpl<RSAPublicKey> implements RSAPrivateKey {
+public class SimpleRSAPrivateKeyImpl extends SimplePrivateKeyImpl<SimpleRSAPublicKey> implements SimpleRSAPrivateKey {
 
-    public RSAPrivateKeyImpl(java.security.interfaces.RSAPrivateKey key) {
+    public SimpleRSAPrivateKeyImpl(java.security.interfaces.RSAPrivateKey key) {
         super(key);
     }
 
     @Override
-    public Attempt<RSAPublicKey> publicKey() {
+    public Attempt<SimpleRSAPublicKey> publicKey() {
         final Key key = this.unwrap();
         if(key instanceof RSAPrivateCrtKey) {
             // get spec
@@ -41,7 +41,7 @@ public class RSAPrivateKeyImpl extends PrivateKeyImpl<RSAPublicKey> implements R
                 // if it is found, return it
                 if(publicKey instanceof java.security.interfaces.RSAPublicKey) {
                     final java.security.interfaces.RSAPublicKey rsaPublicKey = (java.security.interfaces.RSAPublicKey)publicKey;
-                    final RSAPublicKey impl = new RSAPublicKeyImpl(rsaPublicKey);
+                    final SimpleRSAPublicKey impl = new SimpleRSAPublicKeyImpl(rsaPublicKey);
                     return Attempt.succeed(impl);
                 }
             } catch (InvalidKeySpecException e) {

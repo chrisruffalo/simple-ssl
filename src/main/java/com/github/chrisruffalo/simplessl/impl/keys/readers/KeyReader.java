@@ -1,6 +1,6 @@
 package com.github.chrisruffalo.simplessl.impl.keys.readers;
 
-import com.github.chrisruffalo.simplessl.api.keys.Key;
+import com.github.chrisruffalo.simplessl.api.keys.SimpleKey;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
 
 import java.io.InputStream;
@@ -11,10 +11,10 @@ import java.nio.file.Path;
  */
 public interface KeyReader {
 
-    <K extends Key> Attempt<K> read(final Path path);
+    <K extends SimpleKey> Attempt<K> read(final Path path);
 
-    <K extends Key> Attempt<K> read(final InputStream stream);
+    <K extends SimpleKey> Attempt<K> read(final InputStream stream);
 
-    <K extends Key> Attempt<K> read(final byte[] bytes);
+    <K extends SimpleKey> Attempt<K> read(final byte[] bytes);
 
 }
