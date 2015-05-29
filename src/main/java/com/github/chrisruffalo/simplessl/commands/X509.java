@@ -3,17 +3,13 @@ package com.github.chrisruffalo.simplessl.commands;
 import com.github.chrisruffalo.simplessl.api.certificates.Certificate;
 import com.github.chrisruffalo.simplessl.api.certificates.CertificateBuilder;
 import com.github.chrisruffalo.simplessl.api.model.Attempt;
-import com.github.chrisruffalo.simplessl.api.model.Error;
 import com.github.chrisruffalo.simplessl.impl.certificates.CertificateBuilderImpl;
-import com.github.chrisruffalo.simplessl.impl.certificates.CertificateImpl;
 import com.github.chrisruffalo.simplessl.impl.certificates.readers.X509CertificateReader;
 import com.github.chrisruffalo.simplessl.impl.certificates.readers.X509DERCertificateReader;
 import com.github.chrisruffalo.simplessl.impl.certificates.readers.X509PEMCertificateReader;
-import com.google.common.io.ByteStreams;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

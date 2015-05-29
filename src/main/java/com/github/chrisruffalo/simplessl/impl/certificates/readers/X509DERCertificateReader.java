@@ -8,7 +8,6 @@ import com.github.chrisruffalo.simplessl.impl.certificates.CertificateImpl;
 import com.google.common.io.ByteStreams;
 import org.bouncycastle.cert.X509CertificateHolder;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

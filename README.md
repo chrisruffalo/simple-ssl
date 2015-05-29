@@ -36,10 +36,11 @@ some of the basics here.
     * PEM encoded PCKS#8
 * Support for x509 Certificates (v1 and v3)
     * SHA1 and SHA2 signature types
+    * Reading and writing v1 certificates
     
 ## Upcoming Features
 
-* Support for reading and writing x509 certificates
+* Support for reading and inspecting x509 certificates
 * Support for creating and applying CSRs
 * Support for PCKS#12
 * Support for encryption when reading/writing
@@ -90,7 +91,7 @@ The internal implementation will default to secure options and will attempt to w
 ## Design Notes
 
 Most of the objects in the API that have a direct analog in the JCE are type-compatible where possible.  These objects can be unwrapped through the ```unwrap()``` method
-to convert to a JCE object if required.  Objects, like ```KeyPair```, that cannot extend interfaces and types from the JCE API also support ```unwrap()``` so that
+to convert to a JCE object if required.  Objects, like ```SimpleKeyPair```, that cannot extend interfaces and types from the JCE API also support ```unwrap()``` so that
 they can be used with JCE types.
 
 The SimpleSSL API also makes use of ```Optional<>``` and ```Attempt<>``` to support safe programming.  This allows the user to inspect many of the returned values without worrying
@@ -113,9 +114,18 @@ Let's take a quick look at the ```Attempt``` API:
 
 ``` java
 public abstract class Attempt<VALUE> {
+    // the value of the object, if present
     VALUE get();
+    // if the value is not present (failed) then return the provided alternative
+    VALUE or(VALUE alternative);
+    // if the value is not present then throw exceptions
+    VALUE orThrow() throws AttemptFailureException;
+    // if the value is not present then throw a RuntimeException wrapping the exceptions
+    VALUE orRuntimeException();
+    // used to determine if the value is present or not
     boolean failed();
     boolean successful();
+    // error handling and warning states
     boolean hasErrors();
     List<Error> errors();
     boolean hasWarnings();
@@ -143,6 +153,9 @@ single exception.  It is intended that by providing more information to the end 
 implementation to avoid the error cases that are reported during testing and integration steps instead of just hoping to catch all of the
 possible exceptions.
 
+A method that returns an ```Attempt``` will never return a null reference and an ```Attempt``` that is successful will never *contain* a null 
+reference.
+
 ## Exceptions and Errors
 
 It is the general viewpoint of SimpleSSL to never throw an exception, checked or unchecked, unless there is a fundamental error within the
@@ -152,14 +165,12 @@ provider failures.
 Otherwise, if an error is encountered, an Optional with absent value or a failed Attempt (possibly with errors attached) will be returned instead 
 of a null object or unchecked exception.  This is to give the users of the API a mechanism for deciding if they want to log, halt, or continue.
 
-The SimpleSSL API will never return a null object.  If a null instance is found then it is an issue and should be reported.
-
 ## Examples <a name="examples"></a>
 
 ### **Generate a RSA Key**
 
 ``` java
-KeyPair pair = Keys.generateRSA(2048);
+SimpleKeyPair pair = SimpleSSL.RSA().generate(2048);
 ```
 
 One line that *matches* the way that the OpenSSL, Ruby, C, C++, C\#, Python, and Perl APIs work.  Seriously.
@@ -168,33 +179,34 @@ One line that *matches* the way that the OpenSSL, Ruby, C, C++, C\#, Python, and
 
 ``` java
 Path privateKeyPath = Paths.get("/keys/private_key.pem");
-Attempt<RSAPrivateKey> readAttempt = Keys.read(privateKeyPath);
-RSAPrivateKey privateKey = readAttempt.get();
+Attempt<SimpleRSAPrivateKey> readAttempt = SimpleSSL.RSA().read(privateKeyPath);
+SimpleRSAPrivateKey privateKey = readAttempt.get();
 ```
 
-Read, in just about any common format, a private key file.  If something goes wrong the key will be absent from the Attempt and errors 
+This will read, in known formats, a private key file.  If something goes wrong the key will be absent from the Attempt and errors 
 will be present describing what went wrong.
 
 ### **Write a Key to DER or PEM**
 
 ``` java
 Path outputPemPath = Paths.get("/keys/private_key.pem");
-Keys.writePEM(privateKey, outputPemPath);
+SimpleSSL.RSA().write(privateKey, outputPemPath); // default write-mode is PEM
+SimpleSSL.RSA().write(WriteMode.PEM, privateKey, outputPemPath); // or be explicit
 
 Path outputDerPath = Paths.get("/keys/private_key.der");
-Keys.writePEM(privateKey, outputDerPath);
+SimpleSSL.RSA().write(WriteMode.DER, privateKey, outputDerPath);
 ```
 
 That's it!  It uses Java new file API to handle the paths and it provides a simple interface for writing keys.
 
-### **Read public key from private key (where supported)**
+### **Read public key from private key**
 
 ``` java
 Path privateKeyPath = Paths.get("/keys/private_key.pem");
-Attempt<RSAPrivateKey> readAttempt = Keys.read(privateKeyPath);
+Attempt<SimpleRSAPrivateKey> readAttempt = SimpleSSL.RSA().read(privateKeyPath);
 
 RSAPrivateKey privateKey = readAttempt.get();
-Attempt<RSAPublicKey> publicKey = privateKey.publicKey();
+Attempt<SimpleRSAPublicKey> publicKey = privateKey.publicKey();
 ```
 
 This depends on the ability to derive/reconstruct the private key from what was given and may not be available with all types so it comes with an Attempt<> so that
@@ -202,17 +214,17 @@ you can determine if the key was found without having to sort through exceptions
 
 ## API Overview <a name="api"></a>
 
-* [Keys](#keys)
-* [x509 Certificates](#certificates)
+* [RSA](#rsa)
+* [x509](#x509)
 
-### Keys <a name="keys"></a>
+### Keys <a name="rsa"></a>
 
-The entry point for Keys is ```com.github.chrisruffalo.simplessl.commands.Keys```.  This is used to read Keys, generate Keys, and otherwise manipulate keys as you would
-in OpenSSL.  The analogous commands in OpenSSL would be those that generate, modify, and inspect key files.
+The entry point for RSA related commands is ```com.github.chrisruffalo.simplessl.commands.RSA```.  This is used to read RSA Keys, generate RSA Keys, and otherwise manipulate RSA data as you would
+in OpenSSL.  The analogous commands in OpenSSL would be those that generate, modify, and inspect RSA files.
 
 ### Certificates <a name="certificates"></a>
 
-The entry point for Certificates is ```com.github.chrisruffalo.simplessl.commands.Certificates```.
+The entry point for Certificates is ```com.github.chrisruffalo.simplessl.commands.X509```.
 
 
 <br/>

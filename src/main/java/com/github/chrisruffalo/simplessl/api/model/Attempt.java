@@ -54,28 +54,91 @@ public abstract class Attempt<VALUE> {
         return this.id;
     }
 
+    /**
+     * <p>If a value was successfully returned, then get that
+     * value. If not then it will throw an IllegalStateException
+     * when the value is missing (because of a failed attempt).</p>
+     * <p>A successful attempt will not provide a value of null.</p>
+     *
+     * @return
+     */
     public abstract VALUE get();
 
-    public abstract VALUE or(final VALUE defaultValue);
+    /**
+     * Returns the provided alternate value in the event that the
+     * attempt has failed or returns the successful value if
+     * the attempt was successful.
+     *
+     * @param alternateValue
+     * @return
+     */
+    public abstract VALUE or(final VALUE alternateValue);
 
+    /**
+     * Throws an AttemptFailureException if the attempt has failed or
+     * returns the successful value if the attempt was successful.
+     *
+     * @return
+     * @throws AttemptFailureException
+     */
     public abstract VALUE orThrow() throws AttemptFailureException;
 
-    public abstract VALUE orRuntimeException() throws RuntimeAttemptFailureException;
+    /**
+     * Throws a RuntimeAttemptFailureException if the attempt has failed or
+     * returns the successful value if the attempt was successful.
+     *
+     * @return
+     * @throws RuntimeAttemptFailureException
+     */
+    public abstract VALUE orRuntimeException();
 
+    /**
+     * True if errors are present on the attempt in addition to it having
+     * a failure state.
+     *
+     * @return
+     */
     public abstract boolean hasErrors();
 
+    /**
+     * A list of Errors on the attempt that contributed to or caused the failure.
+     *
+     * @return
+     */
     public abstract List<Error> errors();
 
+    /**
+     * The state of failure for the Attempt.
+     *
+     * @return
+     */
     public abstract boolean failed();
 
+    /**
+     * The state of success for the Attempt.
+     *
+     * @return
+     */
     public boolean successful() {
         return !this.failed();
     }
 
+    /**
+     * True if some warning state occurred during the Attempt.  This can encode
+     * information that could indicate a faulty implementation or bad configuration
+     * values. Warnings will not cause the Attempt to fail.
+     *
+     * @return
+     */
     public boolean hasWarnings() {
         return this.warnings.size() > 0;
     }
 
+    /**
+     * List of warnings ecnountered during the Attempt.
+     *
+     * @return
+     */
     public List<Warning> warnings() {
         if(this.warnings == null || this.warnings.isEmpty()) {
             return Collections.emptyList();
@@ -97,7 +160,7 @@ public abstract class Attempt<VALUE> {
      *
      * @param logger
      */
-    public void audit(Logger logger) {
+    public void audit(final Logger logger) {
         final StringBuilder builder = new StringBuilder("\n");
 
         // print warnings
